@@ -16,7 +16,7 @@ class BookPsListComponent extends GetView<ReaderController> {
     });
   }
 
-  //pannel için tasarım yapılacak flutter_slidable: ^4.0.3 ekelnecek güncelle sil ekranları açılabilir olacak
+  //todo pannel için tasarım yapılacak flutter_slidable: ^4.0.3 ekelnecek güncelle sil ekranları açılabilir olacak
   Widget _builList() {
     return Container(
       decoration: BoxDecoration(

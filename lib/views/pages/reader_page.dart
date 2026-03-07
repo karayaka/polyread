@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:get/get.dart';
 import 'package:polyread/data/controllers/reader_controller.dart';
+import 'package:polyread/routing/route_fix.dart';
 import 'package:polyread/views/reader_components/add_ps_component.dart';
 import 'package:polyread/views/reader_components/book_ps_list_component.dart';
 import 'package:polyread/views/reader_components/chapter_drawer_component.dart';
 import 'package:polyread/views/reader_components/setting_panel_component.dart';
+import 'package:polyread/views/reader_components/vocabulary_component.dart';
 
 class ReaderPage extends GetView<ReaderController> {
   const ReaderPage({super.key});
@@ -49,7 +51,7 @@ class ReaderPage extends GetView<ReaderController> {
                       displaySettings: EpubDisplaySettings(
                         //fontSize: (controller.fontSize.value).toInt(),
                         flow: EpubFlow.paginated,
-                        useSnapAnimationAndroid: true, //bu false olamalı
+                        useSnapAnimationAndroid: false, //bu false olamalı
                         snap: true,
                         theme: EpubTheme.light(),
                         allowScriptedContent: true,
@@ -92,6 +94,9 @@ class ReaderPage extends GetView<ReaderController> {
                             id: 1,
                             action: () {
                               //controller.epubController.addHighlight(cfi: textSelectionCfi);
+                              _showVocabularyPanel(
+                                controller.selectedText ?? "",
+                              );
                             },
                           ),
                           ContextMenuItem(
@@ -99,6 +104,16 @@ class ReaderPage extends GetView<ReaderController> {
                             id: 2,
                             action: () async {
                               await controller.addPsOrHihglight();
+                            },
+                          ),
+                          ContextMenuItem(
+                            title: "Paylaş",
+                            id: 3,
+                            action: () async {
+                              RouteFix.toSharePage(
+                                controller.selectedText ?? "",
+                                controller.bookFromDb?.id ?? 0,
+                              );
                             },
                           ),
                         ],
@@ -214,5 +229,10 @@ class ReaderPage extends GetView<ReaderController> {
 
   void _showSettingPanel() {
     Get.bottomSheet(SettingPanelComponent());
+  }
+
+  void _showVocabularyPanel(String word) {
+    Get.bottomSheet(VocabularyComponent(word: word));
+    controller.epubController.clearSelection();
   }
 }

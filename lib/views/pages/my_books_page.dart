@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:polyread/core/base_components/book_progres_component.dart';
 import 'package:polyread/core/base_components/custom_file_image_component.dart';
 import 'package:polyread/data/controllers/my_books_controller.dart';
+import 'package:polyread/data/local_storage/models/library_storage_model.dart';
 
 class MyBooksPage extends GetView<MyBooksController> {
   const MyBooksPage({super.key});
@@ -11,83 +12,44 @@ class MyBooksPage extends GetView<MyBooksController> {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => MyBooksController());
-    return DefaultTabController(
-      length: 4,
-      child: Builder(
-        builder: (context) {
-          final tabController = DefaultTabController.of(context);
 
-          tabController.addListener(() {
-            if (!tabController.indexIsChanging) {
-              print("Aktif Tab Index: ${tabController.index}");
-            }
-          });
-
-          return SafeArea(
-            child: Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              appBar: AppBar(
-                elevation: 0,
-                centerTitle: false,
-                title: const Text(
-                  "Kitaplarım",
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(56),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    child: TabBar(
-                      controller: tabController,
-                      indicator: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      labelColor: Colors.white,
-                      unselectedLabelColor: Theme.of(
-                        context,
-                      ).colorScheme.onSurfaceVariant,
-                      tabs: const [
-                        Tab(icon: Icon(Icons.library_books)),
-                        Tab(icon: Icon(Icons.pause_circle)),
-                        Tab(icon: Icon(Icons.play_circle)),
-                        Tab(icon: Icon(Icons.check_circle)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              body: Obx(() {
-                if (controller.myBooksLoading.value) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return RefreshIndicator(
-                  onRefresh: () => controller.getMyBooks(),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: _bookGrid(),
-                  ),
-                );
-              }),
-
-              floatingActionButton: Obx(() {
-                if (controller.importLoading.value) {
-                  return const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                return FloatingActionButton.extended(
-                  onPressed: controller.addBook,
-                  icon: const Icon(Icons.add),
-                  label: const Text("Kitap Ekle"),
-                );
-              }),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        appBar: AppBar(
+          elevation: 0,
+          centerTitle: false,
+          title: const Text(
+            "Kitaplarım",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+        body: Obx(() {
+          if (controller.myBooksLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return RefreshIndicator(
+            onRefresh: () => controller.getMyBooks(),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: _bookGrid(),
             ),
           );
-        },
+        }),
+
+        floatingActionButton: Obx(() {
+          if (controller.importLoading.value) {
+            return const Padding(
+              padding: EdgeInsets.all(16),
+              child: CircularProgressIndicator(),
+            );
+          }
+          return FloatingActionButton.extended(
+            onPressed: controller.addBook,
+            icon: const Icon(Icons.add),
+            label: const Text("Kitap Ekle"),
+          );
+        }),
       ),
     );
   }
@@ -111,49 +73,51 @@ class MyBooksPage extends GetView<MyBooksController> {
             borderRadius: BorderRadius.circular(8),
             child: Container(
               color: Colors.grey[200],
-              child: Stack(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  Stack(
                     children: [
                       CustomFileImageComponent(path: imageUrl ?? ""),
-                      BookProgresComponent(progres: book.progres / 100),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: Text(
-                          book.bookTitle,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                      Positioned(
+                        top: 4,
+                        left: 4,
+                        child: GestureDetector(
+                          onTap: () => _showEditPanel(book),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              size: 16,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  Positioned(
-                    top: 8,
-                    right: 8,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white12,
-                        boxShadow: [
-                          BoxShadow(blurRadius: 4, color: Colors.black26),
-                        ],
-                      ),
-                      child: IconButton(
-                        onPressed: () => _showEditPanel(
-                          book.bookId,
-                          book.bookTitle,
-                          book.id,
+                  BookProgresComponent(progres: book.progres / 100),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            book.bookTitle,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                        icon: Icon(Icons.edit),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -164,7 +128,7 @@ class MyBooksPage extends GetView<MyBooksController> {
     );
   }
 
-  void _showEditPanel(String bookId, String bookName, int id) {
+  void _showEditPanel(LibraryStorageModel book) {
     Get.bottomSheet(
       Container(
         decoration: BoxDecoration(
@@ -176,7 +140,7 @@ class MyBooksPage extends GetView<MyBooksController> {
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
                   Container(
@@ -187,12 +151,63 @@ class MyBooksPage extends GetView<MyBooksController> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Kitap İşlemleri',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  SizedBox(height: 8),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.brown,
+                              width: 10.0,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade500,
+                                spreadRadius: 5,
+                                blurRadius: 7,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          width: 120,
+                          height: 180,
+                          child: CustomFileImageComponent(
+                            path: book.bookCoverPath ?? "",
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 12),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text(
+                                book.bookTitle,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                (book.authors ?? []).join(", "),
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(bookName),
                 ],
               ),
             ),
@@ -205,7 +220,7 @@ class MyBooksPage extends GetView<MyBooksController> {
                   ListTile(
                     leading: Icon(Icons.edit, color: Colors.blue.shade600),
                     title: Text('Düzenle'),
-                    onTap: () => controller.toEditMetaDataPage(id),
+                    onTap: () => controller.toEditMetaDataPage(book.id),
                   ),
                   ListTile(
                     leading: Icon(Icons.delete, color: Colors.red.shade600),
@@ -214,7 +229,7 @@ class MyBooksPage extends GetView<MyBooksController> {
                       style: TextStyle(color: Colors.red.shade600),
                     ),
                     onTap: () {
-                      controller.deleteBook(id, bookId);
+                      controller.deleteBook(book.id, book.bookId);
                       Get.back();
                     },
                   ),

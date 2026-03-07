@@ -1,11 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:polyread/views/pages/external_history_page.dart';
 import 'package:polyread/views/pages/library_page.dart';
 import 'package:polyread/views/pages/my_books_page.dart';
-import 'package:polyread/views/pages/profile_page.dart';
 import 'package:polyread/views/pages/vocabulary_history_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,7 +33,6 @@ class _HomePageState extends State<HomePage> {
     if (Platform.isAndroid) {
       screens.add(const ExternalHistoryPage());
     }
-    screens.add(const ProfilePage());
     return screens;
   }
 
@@ -42,19 +41,19 @@ class _HomePageState extends State<HomePage> {
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.bookmark),
         title: 'Kitaplık',
-        activeColorPrimary: Colors.black,
+        activeColorPrimary: Get.theme.primaryColor,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.book_online),
         title: 'Kitaplarım',
-        activeColorPrimary: Colors.black,
+        activeColorPrimary: Get.theme.primaryColor,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.wordpress),
         title: 'Kelimelerim',
-        activeColorPrimary: Colors.black,
+        activeColorPrimary: Get.theme.primaryColor,
         inactiveColorPrimary: Colors.grey,
       ),
     ];
@@ -63,19 +62,11 @@ class _HomePageState extends State<HomePage> {
         PersistentBottomNavBarItem(
           icon: const Icon(Icons.history),
           title: 'Son Açılanlar',
-          activeColorPrimary: Colors.black,
+          activeColorPrimary: Get.theme.primaryColor,
           inactiveColorPrimary: Colors.grey,
         ),
       );
     }
-    bars.add(
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.person),
-        title: 'Profilim',
-        activeColorPrimary: Colors.black,
-        inactiveColorPrimary: Colors.grey,
-      ),
-    );
 
     return bars;
   }

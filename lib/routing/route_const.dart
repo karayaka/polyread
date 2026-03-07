@@ -5,4 +5,5 @@ class RouteConst {
   static const editMetaData = "/editMetaData";
   static const readerPage = "/readerPage";
   static const psFormPage = "/psFormPage";
+  static const sharePage = "/sharePage";
 }

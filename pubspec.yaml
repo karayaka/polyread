@@ -54,7 +54,9 @@ dependencies:
   get_storage: ^2.1.1
   wakelock_plus: ^1.4.0
   textfield_tags: ^3.0.1
-  
+  screenshot: ^3.0.0
+  share_plus: ^7.2.0
+  flutter_tts: ^4.2.5
   
 
 dev_dependencies:

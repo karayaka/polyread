@@ -17,7 +17,7 @@ class HttpService {
     var header = {
       'Accept': '*/*',
       'Content-Type': 'application/json',
-      'AppKey': ProjectConst.APP_KEY,
+      'ApiKey': ProjectConst.APP_KEY,
     };
     final baseOptions = BaseOptions(
       contentType: Headers.jsonContentType,

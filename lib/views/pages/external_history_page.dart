@@ -12,11 +12,12 @@ class ExternalHistoryPage extends GetView<ExternalHistoryController> {
     Get.lazyPut(() => ExternalHistoryController());
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Son Açılanlar"),
-        centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        centerTitle: false,
+        title: const Text(
+          "Son Açılanlar",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
       ),
       body: Obx(() {
         if (controller.pageLoading.value) {
@@ -52,56 +53,50 @@ class ExternalHistoryPage extends GetView<ExternalHistoryController> {
                   )[0]
                 : (item.modifiedDate?.toString() ?? '');
 
-            return Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+            return ListTile(
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
               ),
-              elevation: 1,
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                leading: Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Center(
-                    child: Text(
-                      item.name != null && item.name!.isNotEmpty
-                          ? item.name![0].toUpperCase()
-                          : '?',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
-                      ),
+                child: Center(
+                  child: Text(
+                    item.name != null && item.name!.isNotEmpty
+                        ? item.name![0].toUpperCase()
+                        : '?',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
                     ),
                   ),
                 ),
-                title: Text(
-                  item.name ?? 'İsim yok',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
-                ),
-                subtitle: Text(
-                  dateText,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                ),
-                trailing: IconButton(
-                  icon: Icon(Icons.delete_outline, color: Colors.grey.shade700),
-                  onPressed: () => controller.deleteHistory(item.id),
-                ),
-                onTap: () {
-                  Get.toNamed(
-                    RouteConst.readerPage,
-                    arguments: {"bookPath": item.path, "bookName": item.name},
-                  );
-                },
               ),
+              title: Text(
+                item.name ?? 'İsim yok',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                dateText,
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+              ),
+              trailing: IconButton(
+                icon: Icon(Icons.delete_outline, color: Colors.grey.shade700),
+                onPressed: () => controller.deleteHistory(item.id),
+              ),
+              onTap: () {
+                Get.toNamed(
+                  RouteConst.readerPage,
+                  arguments: {"bookPath": item.path, "bookName": item.name},
+                );
+              },
             );
           },
         );

@@ -16,7 +16,10 @@ class LibraryPage extends GetView<LibraryController> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Kitaplığım"),
+          title: const Text(
+            "Kitaplık",
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
           actions: [
             IconButton(
               onPressed: () {

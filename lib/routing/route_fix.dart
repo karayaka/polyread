@@ -6,4 +6,11 @@ class RouteFix {
   static Future<dynamic>? toPsFormPage(PsPageModel model) {
     return Get.toNamed(RouteConst.psFormPage, arguments: model.toMap());
   }
+
+  static Future<dynamic>? toSharePage(String text, int bookId) {
+    return Get.toNamed(
+      RouteConst.sharePage,
+      arguments: {"text": text, "bookId": bookId},
+    );
+  }
 }
