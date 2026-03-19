@@ -14,7 +14,7 @@ import 'package:polyread/routing/route_const.dart';
 
 class LibraryController extends BaseController {
   late LibraryRepository db;
-  var title = "Kitaplığım".obs;
+
   var page = 1;
   var books = RxList<LibraryBookModel>();
   LibraryBookModel? selectedBook;
@@ -117,6 +117,7 @@ class LibraryController extends BaseController {
   Future filterBooks() async {
     books.clear();
     booksLoading.value = true;
+    Get.back();
     await getBooks();
     booksLoading.value = false;
   }
@@ -125,10 +126,11 @@ class LibraryController extends BaseController {
     selectedTopic = null;
     selectedLanguages = null;
     books.clear();
+    Get.back();
     booksLoading.value = true;
+
     await getBooks();
     booksLoading.value = false;
-    Get.back();
   }
 
   void hasBook() {

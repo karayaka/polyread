@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:polyread/data/controllers/vocabulary_history_controller.dart';
 import 'package:polyread/views/pages/external_history_page.dart';
 import 'package:polyread/views/pages/library_page.dart';
 import 'package:polyread/views/pages/my_books_page.dart';
@@ -74,6 +75,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return PersistentTabView(
+      onItemSelected: (index) {
+        if (index == 2) {
+          Get.find<VocabularyHistoryController>().loadVocabularyHistory();
+        }
+      },
       context,
       controller: _controller,
       screens: _buildScreens(),

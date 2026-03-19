@@ -6,6 +6,10 @@ class VocabularyStorageModel {
   Id id = Isar.autoIncrement;
 
   @Index(type: IndexType.value)
+  bool onShowVocabulary = false;
+  @Index(type: IndexType.value)
+  bool onLearnVocabulary = false;
+  @Index(type: IndexType.value)
   late String bookId;
   @Index(type: IndexType.value)
   late String sourceWord;
@@ -15,4 +19,6 @@ class VocabularyStorageModel {
   late String? desc;
   @Index(type: IndexType.value)
   late String languageCode;
+  @Index(type: IndexType.value)
+  DateTime createdAt = DateTime.now();
 }

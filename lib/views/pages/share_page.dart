@@ -13,7 +13,16 @@ class SharePage extends GetView<ShareController> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Paylaş"), elevation: 0),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: const Text(
+          "Alıntıyı Paylaş",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+      ),
       body: Obx(() {
         if (controller.pageLoading.value) {
           return const Center(child: CircularProgressIndicator());
@@ -23,94 +32,137 @@ class SharePage extends GetView<ShareController> {
     );
   }
 
-  SingleChildScrollView _drawBody(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Preview/Editor Container
-            _buildPreviewContainer(),
-            const SizedBox(height: 8),
-            DefaultTabController(
-              length: 3,
+  Widget _drawBody(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  TabBar(
-                    tabs: [
-                      Tab(text: "Biçim"),
-                      Tab(text: "Yazı Rengi"),
-                      Tab(text: "Kart Rengi"),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 220,
-                    child: TabBarView(
-                      children: [
-                        // Formatting Options
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildToggleButton(
-                                      icon: Icons.format_bold,
-                                      label: "Kalın",
-                                      isActive: controller.isBold,
-                                      onTap: () => controller.toggleBold(),
-                                    ),
-                                  ),
-                                  SizedBox(width: 4),
-                                  Expanded(
-                                    child: _buildToggleButton(
-                                      icon: Icons.format_underlined,
-                                      label: "Alt Çizgi",
-                                      isActive: controller.isUnderline,
-                                      onTap: () => controller.toggleUnderline(),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                  _buildPreviewContainer(),
+                  const SizedBox(height: 16),
+                  _buildEditorPanel(context),
+                ],
+              ),
+            ),
+          ),
+        ),
+        // Share Button Fixed at Bottom
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, -5),
+              ),
+            ],
+          ),
+          child: SafeArea(
+            child: _buildShareButton(
+              label: "Paylaş",
+              icon: Icons.share_rounded,
+              color: Theme.of(context).primaryColor,
+              onTap: () => controller.captureAndShare("other"),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-                              const SizedBox(height: 4),
-                              _buildAlignmentSelector(),
-                              const SizedBox(height: 4),
-                              _buildFontSizeSlider(),
-                            ],
-                          ),
-                        ),
-                        // Text Color
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: _buildColorPicker("Yazı Rengi", true),
-                        ),
-                        // Background Color
-                        Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: _buildColorPicker("Arka Plan Rengi", false),
-                        ),
-                      ],
-                    ),
+  Widget _buildEditorPanel(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
+              ),
+              child: TabBar(
+                labelColor: Theme.of(context).primaryColor,
+                unselectedLabelColor: Colors.grey.shade500,
+                indicatorColor: Theme.of(context).primaryColor,
+                indicatorWeight: 3,
+                tabs: const [
+                  Tab(icon: Icon(Icons.format_paint, size: 16), text: "BİÇİM"),
+                  Tab(icon: Icon(Icons.text_format, size: 16), text: "METİN"),
+                  Tab(
+                    icon: Icon(Icons.color_lens, size: 16),
+                    text: "ARKA PLAN",
                   ),
                 ],
               ),
             ),
-            // Share Buttons
-            const SizedBox(height: 8),
             SizedBox(
-              width: double.infinity,
-              child: _buildShareButton(
-                label: "Diğer Uygulamalar",
-                icon: Icons.share,
-                color: Colors.cyan.shade400,
-                onTap: () => controller.captureAndShare("other"),
+              height: 250,
+              child: TabBarView(
+                children: [
+                  // Formatting Options
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildToggleButton(
+                                icon: Icons.format_bold,
+                                label: "Kalın",
+                                isActive: controller.isBold,
+                                onTap: () => controller.toggleBold(),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _buildToggleButton(
+                                icon: Icons.format_underlined,
+                                label: "Alt Çizgi",
+                                isActive: controller.isUnderline,
+                                onTap: () => controller.toggleUnderline(),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        _buildAlignmentSelector(context),
+                        const SizedBox(height: 8),
+                        _buildFontSizeSlider(context),
+                      ],
+                    ),
+                  ),
+                  // Text Color
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: _buildColorPicker("Metin Rengini Seçin", true),
+                  ),
+                  // Background Color
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: _buildColorPicker("Kart Rengini Seçin", false),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -124,67 +176,85 @@ class SharePage extends GetView<ShareController> {
       return RepaintBoundary(
         key: controller.screenshotKey,
         child: Container(
-          padding: const EdgeInsets.all(24),
+          width: double.infinity,
+          padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
             color: controller.backgroundColor.value,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() {
-                return Text(
-                  controller.text.value,
-                  textAlign: controller.textAlign.value,
-                  style: TextStyle(
-                    color: controller.textColor.value,
-                    fontSize: controller.fontSize.value,
-                    fontWeight: controller.fontWeight.value,
-                    decoration: isUnderlined ? TextDecoration.underline : null,
-                    decorationColor: controller.textColor.value,
-                    height: 1.6,
-                  ),
-                );
-              }),
-              const SizedBox(height: 16),
-              Divider(color: controller.textColor.value.withValues(alpha: 0.3)),
+              Icon(
+                Icons.format_quote_rounded,
+                size: 48,
+                color: controller.textColor.value.withOpacity(0.15),
+              ),
               const SizedBox(height: 8),
+              Text(
+                controller.text.value,
+                textAlign: controller.textAlign.value,
+                style: TextStyle(
+                  color: controller.textColor.value,
+                  fontSize: controller.fontSize.value,
+                  fontWeight: controller.fontWeight.value,
+                  decoration: isUnderlined ? TextDecoration.underline : null,
+                  decorationColor: controller.textColor.value,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Divider(
+                color: controller.textColor.value.withOpacity(0.2),
+                thickness: 1,
+              ),
+              const SizedBox(height: 16),
               if (controller.bookTitle.isNotEmpty)
                 Text(
-                  "— ${controller.bookTitle}",
+                  controller.bookTitle,
                   style: TextStyle(
                     color: controller.textColor.value,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
                   ),
                 ),
-              if (controller.bookAuthors.isNotEmpty)
+              if (controller.bookAuthors.isNotEmpty) ...[
+                const SizedBox(height: 4),
                 Text(
-                  "by ${controller.bookAuthors}",
+                  "Yazar: ${controller.bookAuthors}",
                   style: TextStyle(
-                    color: controller.textColor.value.withValues(alpha: 0.8),
+                    color: controller.textColor.value.withOpacity(0.7),
                     fontSize: 12,
-                    fontStyle: FontStyle.italic,
                   ),
                 ),
-              const SizedBox(height: 12),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  "📱 Polyread",
-                  style: TextStyle(
-                    color: controller.textColor.value.withValues(alpha: 0.6),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
+              ],
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.auto_stories_rounded,
+                    size: 14,
+                    color: controller.textColor.value.withOpacity(0.5),
                   ),
-                ),
+                  const SizedBox(width: 4),
+                  Text(
+                    "Polyread ile Paylaşıldı",
+                    style: TextStyle(
+                      color: controller.textColor.value.withOpacity(0.5),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -195,46 +265,76 @@ class SharePage extends GetView<ShareController> {
 
   Widget _buildColorPicker(String label, bool isTextColor) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w600)),
-        const SizedBox(height: 2),
-        Obx(() {
-          final currentColor = isTextColor
-              ? controller.textColor.value
-              : controller.backgroundColor.value;
+        Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 16),
+        Expanded(
+          child: Obx(() {
+            final currentColor = isTextColor
+                ? controller.textColor.value
+                : controller.backgroundColor.value;
 
-          return SimpleColorPicker(
-            onColorSelected: (isColor) {
-              if (isTextColor) {
-                controller.setTextColor(isColor);
-              } else {
-                controller.setBackgroundColor(isColor);
-              }
-            },
-            initialColor: currentColor,
-          );
-        }),
+            return SimpleColorPicker(
+              onColorSelected: (isColor) {
+                if (isTextColor) {
+                  controller.setTextColor(isColor);
+                } else {
+                  controller.setBackgroundColor(isColor);
+                }
+              },
+              initialColor: currentColor,
+            );
+          }),
+        ),
       ],
     );
   }
 
-  Widget _buildFontSizeSlider() {
+  Widget _buildFontSizeSlider(BuildContext context) {
     return Obx(() {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Yazı Boyutu: ${controller.fontSize.value.toStringAsFixed(0)}",
-            style: const TextStyle(fontWeight: FontWeight.w600),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Yazı Boyutu",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+              Text(
+                "${controller.fontSize.value.toInt()} px",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).primaryColor,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Slider(
-            value: controller.fontSize.value,
-            min: 12,
-            max: 36,
-            divisions: 12,
-            label: controller.fontSize.value.toStringAsFixed(0),
-            onChanged: (value) => controller.setFontSize(value),
+          const SizedBox(height: 8),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTrackColor: Theme.of(context).primaryColor,
+              inactiveTrackColor: Theme.of(
+                context,
+              ).primaryColor.withValues(alpha: 0.2),
+              thumbColor: Theme.of(context).primaryColor,
+              overlayColor: Theme.of(
+                context,
+              ).primaryColor.withValues(alpha: 0.1),
+              trackHeight: 4.0,
+            ),
+            child: Slider(
+              value: controller.fontSize.value,
+              min: 12,
+              max: 36,
+              divisions: 24,
+              onChanged: (value) => controller.setFontSize(value),
+            ),
           ),
         ],
       );
@@ -248,36 +348,41 @@ class SharePage extends GetView<ShareController> {
     required VoidCallback onTap,
   }) {
     return Obx(() {
+      final active = isActive.value;
       return GestureDetector(
         onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isActive.value
-                ? Theme.of(Get.context!).colorScheme.primary.withOpacity(0.2)
-                : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(8),
+            color: active
+                ? Theme.of(Get.context!).colorScheme.primary.withOpacity(0.15)
+                : Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isActive.value
+              color: active
                   ? Theme.of(Get.context!).colorScheme.primary
-                  : Colors.grey.shade300,
-              width: isActive.value ? 2 : 1,
+                  : Colors.grey.shade200,
+              width: 1.5,
             ),
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 icon,
-                color: isActive.value
+                size: 20,
+                color: active
                     ? Theme.of(Get.context!).colorScheme.primary
                     : Colors.grey.shade600,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Text(
                 label,
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: isActive.value
+                  fontSize: 14,
+                  color: active
                       ? Theme.of(Get.context!).colorScheme.primary
                       : Colors.grey.shade600,
                 ),
@@ -295,49 +400,118 @@ class SharePage extends GetView<ShareController> {
     required Color color,
     required VoidCallback onTap,
   }) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      icon: Icon(icon),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [color, color.withOpacity(0.8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white, size: 24),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildAlignmentSelector() {
+  Widget _buildAlignmentSelector(BuildContext context) {
     return Obx(() {
       final align = controller.textAlign.value;
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _alignmentIcon(Icons.format_align_left, TextAlign.left, align),
-          _alignmentIcon(Icons.format_align_center, TextAlign.center, align),
-          _alignmentIcon(Icons.format_align_right, TextAlign.right, align),
-        ],
+      return Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: _alignmentIcon(
+                Icons.format_align_left,
+                TextAlign.left,
+                align,
+                context,
+              ),
+            ),
+            Expanded(
+              child: _alignmentIcon(
+                Icons.format_align_center,
+                TextAlign.center,
+                align,
+                context,
+              ),
+            ),
+            Expanded(
+              child: _alignmentIcon(
+                Icons.format_align_right,
+                TextAlign.right,
+                align,
+                context,
+              ),
+            ),
+          ],
+        ),
       );
     });
   }
 
-  Widget _alignmentIcon(IconData icon, TextAlign value, TextAlign current) {
+  Widget _alignmentIcon(
+    IconData icon,
+    TextAlign value,
+    TextAlign current,
+    BuildContext context,
+  ) {
+    final isActive = current == value;
     return GestureDetector(
       onTap: () => controller.setTextAlign(value),
-      child: Container(
-        padding: const EdgeInsets.all(8),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: current == value
-              ? Theme.of(Get.context!).colorScheme.primary.withOpacity(0.2)
-              : Colors.transparent,
+          color: isActive ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: isActive
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : [],
         ),
         child: Icon(
           icon,
-          color: current == value
-              ? Theme.of(Get.context!).colorScheme.primary
-              : Colors.grey.shade600,
+          size: 20,
+          color: isActive
+              ? Theme.of(context).primaryColor
+              : Colors.grey.shade500,
         ),
       ),
     );

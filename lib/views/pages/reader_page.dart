@@ -3,8 +3,6 @@ import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:get/get.dart';
 import 'package:polyread/data/controllers/reader_controller.dart';
 import 'package:polyread/routing/route_fix.dart';
-import 'package:polyread/views/reader_components/add_ps_component.dart';
-import 'package:polyread/views/reader_components/book_ps_list_component.dart';
 import 'package:polyread/views/reader_components/chapter_drawer_component.dart';
 import 'package:polyread/views/reader_components/setting_panel_component.dart';
 import 'package:polyread/views/reader_components/vocabulary_component.dart';
@@ -232,7 +230,12 @@ class ReaderPage extends GetView<ReaderController> {
   }
 
   void _showVocabularyPanel(String word) {
-    Get.bottomSheet(VocabularyComponent(word: word));
+    Get.bottomSheet(
+      VocabularyComponent(
+        word: word,
+        bookId: controller.bookFromDb?.bookId ?? "",
+      ),
+    );
     controller.epubController.clearSelection();
   }
 }

@@ -42,61 +42,66 @@ class ExternalHistoryPage extends GetView<ExternalHistoryController> {
         }
 
         return ListView.separated(
-          padding: const EdgeInsets.all(12),
           itemCount: history.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          separatorBuilder: (_, __) => const Divider(height: 1, thickness: 1),
           itemBuilder: (context, index) {
             final item = history[index];
+            final isEven = index.isEven;
             final dateText = item.modifiedDate is DateTime
                 ? (item.modifiedDate as DateTime).toLocal().toString().split(
                     ' ',
                   )[0]
                 : (item.modifiedDate?.toString() ?? '');
 
-            return ListTile(
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(8),
+            return Container(
+              color: isEven
+                  ? Colors.transparent
+                  : Colors.grey.withValues(alpha: 0.05),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
                 ),
-                child: Center(
-                  child: Text(
-                    item.name != null && item.name!.isNotEmpty
-                        ? item.name![0].toUpperCase()
-                        : '?',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+                leading: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      item.name != null && item.name!.isNotEmpty
+                          ? item.name![0].toUpperCase()
+                          : '?',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
+                title: Text(
+                  item.name ?? 'İsim yok',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  dateText,
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                ),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete_outline, color: Colors.grey.shade700),
+                  onPressed: () => controller.deleteHistory(item.id),
+                ),
+                onTap: () {
+                  Get.toNamed(
+                    RouteConst.readerPage,
+                    arguments: {"bookPath": item.path, "bookName": item.name},
+                  );
+                },
               ),
-              title: Text(
-                item.name ?? 'İsim yok',
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                dateText,
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-              ),
-              trailing: IconButton(
-                icon: Icon(Icons.delete_outline, color: Colors.grey.shade700),
-                onPressed: () => controller.deleteHistory(item.id),
-              ),
-              onTap: () {
-                Get.toNamed(
-                  RouteConst.readerPage,
-                  arguments: {"bookPath": item.path, "bookName": item.name},
-                );
-              },
             );
           },
         );

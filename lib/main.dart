@@ -41,10 +41,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-//todo: free book store https://gutendex.com/books/?page=2&topic=Children kategorşer vs ayarlanacak
-//todo çalışma devm edilecek https://chatgpt.com/share/69458e2c-0848-800f-a0f8-bd5e282f6600
-//todo languges:https://gutendex.com/books/?languages=it
-//todo uygulamayı varsayılan epub uygulaması yapma !!
 //todo sor oluşturmak için ia
 //https://chatgpt.com/c/6985b492-3ad0-832b-98f8-8041391a827c çalışma
 //modeller https://openrouter.ai/models?max_price=0.1

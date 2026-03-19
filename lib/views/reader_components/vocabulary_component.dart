@@ -3,106 +3,261 @@ import 'package:get/get.dart';
 import 'package:polyread/data/controllers/vocabulary_controller.dart';
 
 class VocabularyComponent extends GetView<VocabularyController> {
-  const VocabularyComponent({super.key, required this.word});
+  const VocabularyComponent({
+    super.key,
+    required this.word,
+    required this.bookId,
+  });
   final String word;
+  final String bookId;
 
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => VocabularyController());
-    controller.loadVocabulary(word);
+    controller.loadVocabulary(word, bookId);
+
     return Container(
-      height: 250,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: Offset(0, -2),
+            blurRadius: 20,
+            spreadRadius: 2,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Drag handle indicator
+            Center(
+              child: Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 20),
+                width: 48,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
             ),
-          ),
-          Text(
-            "Çeviri Sonuçları",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Obx(() {
-            if (controller.translateLoading.value) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (controller.vocabularyData?.translation != null &&
-                controller.languge != null) {
-              var data = controller.vocabularyData!;
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Divider(height: 0),
-                    Text(
-                      "Seçim:",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(data.sourceText ?? "", style: TextStyle(fontSize: 18)),
-                    Divider(height: 0),
-                    Text(
-                      "Anlamı:",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      data.translation ?? "",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    Divider(height: 0),
-                    Text(
-                      "Dil:",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Row(
+
+            Obx(() {
+              if (controller.translateLoading.value) {
+                return const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 60.0),
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              } else if (controller.vocabularyData?.translation != null &&
+                  controller.languge != null) {
+                var data = controller.vocabularyData!;
+
+                return Flexible(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Chip(label: Text(controller.languge?.value ?? "")),
-                        IconButton(
-                          onPressed: () => controller.speak(1),
-                          icon: Icon(Icons.play_arrow),
+                        // Header Row: Language badge & Audio controls
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.translate_rounded,
+                                    size: 16,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    controller.languge?.value.toUpperCase() ??
+                                        "",
+                                    style: TextStyle(
+                                      color: Theme.of(context).primaryColor,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Obx(
+                              () => Row(
+                                children: [
+                                  _ActionIconButton(
+                                    icon: Icons.volume_up_rounded,
+                                    isLoading: controller.isSpeaking.value,
+                                    onTap: () => controller.speak(1),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  _ActionIconButton(
+                                    icon: Icons.slow_motion_video_rounded,
+                                    isLoading: controller.isSpeaking.value,
+                                    onTap: () => controller.speak(2),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    onPressed: () async {
+                                      await controller.saveToHistory();
+                                    },
+                                    icon: Icon(
+                                      Icons.bookmark,
+                                      color: controller.isSavedToHistory.value
+                                          ? Get.theme.primaryColor
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        IconButton(
-                          onPressed: () => controller.speak(2),
-                          icon: Icon(Icons.slow_motion_video),
+                        const SizedBox(height: 24),
+
+                        // Source Text
+                        Text(
+                          data.sourceText ?? "",
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                            height: 1.2,
+                          ),
+                        ),
+
+                        const SizedBox(height: 8),
+                        Divider(
+                          height: 32,
+                          color: Colors.grey.withValues(alpha: 0.2),
+                        ),
+
+                        // Translation Section
+                        Text(
+                          "ANLAMI",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(
+                              context,
+                            ).primaryColor.withValues(alpha: 0.6),
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          data.translation ?? "",
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                );
+              } else {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 50.0),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.translate,
+                          size: 56,
+                          color: Colors.grey.shade400,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "Çeviri bulunamadı",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ActionIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool isLoading;
+
+  const _ActionIconButton({
+    required this.icon,
+    required this.onTap,
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isLoading ? null : onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          width: 44,
+          height: 44,
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+            borderRadius: BorderRadius.circular(12),
+            color: isLoading
+                ? Colors.grey.withValues(alpha: 0.1)
+                : Colors.transparent,
+          ),
+          child: isLoading
+              ? Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                )
+              : Icon(
+                  icon,
+                  size: 22,
+                  color:
+                      Theme.of(
+                        context,
+                      ).iconTheme.color?.withValues(alpha: 0.7) ??
+                      Colors.black87,
                 ),
-              );
-            } else {
-              return const Center(child: Text("Bir şeyler ters gitti"));
-            }
-          }),
-        ],
+        ),
       ),
     );
   }

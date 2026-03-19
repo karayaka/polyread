@@ -2,31 +2,72 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:get/get.dart';
 import 'package:polyread/core/app_tools/tools.dart';
 import 'package:polyread/data/controllers/base_controller.dart';
+import 'package:polyread/data/local_storage/models/vocabulary_storage_model.dart';
+import 'package:polyread/data/repositories/vocabulary_repository.dart';
 import 'package:polyread/data/services/http_service.dart';
 import 'package:polyread/models/base_models/select_model.dart';
 import 'package:polyread/models/service_models/vocabulary_model.dart';
 
 class VocabularyController extends BaseController {
+  late final VocabularyRepository _vocabularyRepository;
+
   var translateLoading = false.obs;
+  var isSpeaking = false.obs;
   VocabularyModel? vocabularyData;
   SelectModel? languge;
   late final FlutterTts flutterTts;
+  var isSavedToHistory = false.obs;
 
   @override
   void onInit() {
-    print("0n init test");
     flutterTts = FlutterTts();
+    _vocabularyRepository = Get.find<VocabularyRepository>();
+
+    // Add completion handler to reset speaking state
+    flutterTts.setCompletionHandler(() {
+      isSpeaking.value = false;
+    });
+    // Add cancel handler just in case
+    flutterTts.setCancelHandler(() {
+      isSpeaking.value = false;
+    });
+    // Add error handler
+    flutterTts.setErrorHandler((msg) {
+      isSpeaking.value = false;
+      errorMessage("Seslendirme hatası: $msg");
+    });
+
     super.onInit();
   }
 
-  Future loadVocabulary(String word) async {
-    print("Deneme: $word");
-    await translateVocabulary(word);
+  Future loadVocabulary(String word, String bookId) async {
+    translateLoading.value = true;
+
+    // Check cache first
+    var cached = await _vocabularyRepository.getVocabulary(word);
+    if (cached != null) {
+      if (Tools.languges.any((l) => l.key == cached.languageCode)) {
+        languge = Tools.languges.firstWhere(
+          (l) => l.key == cached.languageCode,
+        );
+        vocabularyData = VocabularyModel(
+          translation: cached.text,
+          sourceText: cached.sourceWord,
+          detectedLanguage: cached.languageCode,
+        );
+        isSavedToHistory.value = cached.onShowVocabulary;
+      }
+      translateLoading.value = false;
+      return;
+    }
+
+    // If not cached, fetch from network
+    await translateVocabulary(word, bookId);
   }
 
-  Future translateVocabulary(String word) async {
+  Future translateVocabulary(String word, String bookId) async {
     try {
-      translateLoading.value = true;
+      //todo api değişecek post metodu yapıp parametre olarak almak daha sağlıklı yazı içindeki bağzı karakterler hataya. düşürüyor
       var data = prepareServiceModel<VocabularyModel>(
         await HttpService.instance!.get<VocabularyModel>(
           "https://tr.cagnaz.com/Translate/$word",
@@ -38,6 +79,16 @@ class VocabularyController extends BaseController {
           (l) => l.key == data?.detectedLanguage,
         );
         vocabularyData = data;
+
+        // Save translation to cache
+        await _vocabularyRepository.saveVocabulary(
+          VocabularyStorageModel()
+            ..bookId = bookId
+            ..sourceWord = word
+            ..text = data?.translation ?? ""
+            ..languageCode = data?.detectedLanguage ?? ""
+            ..desc = "",
+        );
       } else {
         errorMessage("Desteklenmeyen dil: ${data?.detectedLanguage}");
       }
@@ -49,20 +100,55 @@ class VocabularyController extends BaseController {
     }
   }
 
-  // todo vocablary history ve gösterim sayfası çalışlacak
   Future speak(int speetType) async {
     if (languge == null) {
       errorMessage("Dil bilgisi bulunamadı");
       return;
     }
-    await flutterTts.setLanguage("${languge?.key}-${languge?.value}"); // dil
-    await flutterTts.setPitch(1.0); // ses tonu
-    if (speetType == 1) {
-      await flutterTts.setSpeechRate(0.25); // yavaş konuşma hızı
-    } else {
-      await flutterTts.setSpeechRate(0.10); // normal konuşma hızı
+
+    if (isSpeaking.value) return; // Prevent multiple clicks
+    isSpeaking.value = true;
+
+    try {
+      await flutterTts.setLanguage("${languge?.key}-${languge?.value}"); // dil
+      await flutterTts.setPitch(1.0); // ses tonu
+      if (speetType == 1) {
+        await flutterTts.setSpeechRate(0.50); // yavaş konuşma hızı
+      } else {
+        await flutterTts.setSpeechRate(0.25); // normal konuşma hızı
+      }
+
+      await flutterTts.speak(vocabularyData?.sourceText ?? "");
+    } catch (e) {
+      isSpeaking.value = false;
+      errorMessage("Seslendirme başlatılamadı");
+    }
+  }
+
+  Future saveToHistory() async {
+    if (vocabularyData?.sourceText == null ||
+        vocabularyData!.sourceText!.isEmpty) {
+      return;
     }
 
-    await flutterTts.speak(vocabularyData?.sourceText ?? "");
+    try {
+      var cached = await _vocabularyRepository.getVocabulary(
+        vocabularyData!.sourceText!,
+      );
+      if (cached != null) {
+        isSavedToHistory.value = !cached.onShowVocabulary;
+        await _vocabularyRepository.toggleShowVocabulary(
+          cached.id,
+          !cached.onShowVocabulary,
+        );
+        succesMessage(
+          isSavedToHistory.value
+              ? "Kelimelerime kaydedildi."
+              : "Kelimelerimden kaldırıldı.",
+        );
+      }
+    } catch (e) {
+      errorMessage(e.toString());
+    }
   }
 }

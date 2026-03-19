@@ -27,7 +27,7 @@ class ShareController extends BaseController {
 
   // Capture key for screenshot
   GlobalKey? screenshotKey;
-
+  //reklemera geçilebilir
   @override
   void onInit() {
     text.value = Get.arguments?["text"] ?? "";
@@ -115,7 +115,7 @@ class ShareController extends BaseController {
 
       // Share text with app name
       final shareText =
-          "${text.value}\n\n— $bookTitle\nby $bookAuthors\n\n📱 Shared via Polyread"; //todo bu bölüme link filan eklencek uygulama tanıtımı
+          "$bookTitle\nby $bookAuthors\n\n📱 Shared via PolyRead"; //todo bu bölüme link filan eklencek uygulama tanıtımı
       await Share.shareXFiles([XFile(imagePath)], text: shareText);
     } catch (e) {
       errorMessage("Share failed: ${e.toString()}");

@@ -19,18 +19,33 @@ const VocabularyStorageModelSchema = CollectionSchema(
   id: 6410705626803270033,
   properties: {
     r'bookId': PropertySchema(id: 0, name: r'bookId', type: IsarType.string),
-    r'desc': PropertySchema(id: 1, name: r'desc', type: IsarType.string),
+    r'createdAt': PropertySchema(
+      id: 1,
+      name: r'createdAt',
+      type: IsarType.dateTime,
+    ),
+    r'desc': PropertySchema(id: 2, name: r'desc', type: IsarType.string),
     r'languageCode': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'languageCode',
       type: IsarType.string,
     ),
+    r'onLearnVocabulary': PropertySchema(
+      id: 4,
+      name: r'onLearnVocabulary',
+      type: IsarType.bool,
+    ),
+    r'onShowVocabulary': PropertySchema(
+      id: 5,
+      name: r'onShowVocabulary',
+      type: IsarType.bool,
+    ),
     r'sourceWord': PropertySchema(
-      id: 3,
+      id: 6,
       name: r'sourceWord',
       type: IsarType.string,
     ),
-    r'text': PropertySchema(id: 4, name: r'text', type: IsarType.string),
+    r'text': PropertySchema(id: 7, name: r'text', type: IsarType.string),
   },
 
   estimateSize: _vocabularyStorageModelEstimateSize,
@@ -39,6 +54,32 @@ const VocabularyStorageModelSchema = CollectionSchema(
   deserializeProp: _vocabularyStorageModelDeserializeProp,
   idName: r'id',
   indexes: {
+    r'onShowVocabulary': IndexSchema(
+      id: -3949242991817589606,
+      name: r'onShowVocabulary',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'onShowVocabulary',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
+    r'onLearnVocabulary': IndexSchema(
+      id: -1501229075833811453,
+      name: r'onLearnVocabulary',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'onLearnVocabulary',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
     r'bookId': IndexSchema(
       id: 3567540928881766442,
       name: r'bookId',
@@ -104,6 +145,19 @@ const VocabularyStorageModelSchema = CollectionSchema(
         ),
       ],
     ),
+    r'createdAt': IndexSchema(
+      id: -3433535483987302584,
+      name: r'createdAt',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'createdAt',
+          type: IndexType.value,
+          caseSensitive: false,
+        ),
+      ],
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -140,10 +194,13 @@ void _vocabularyStorageModelSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.bookId);
-  writer.writeString(offsets[1], object.desc);
-  writer.writeString(offsets[2], object.languageCode);
-  writer.writeString(offsets[3], object.sourceWord);
-  writer.writeString(offsets[4], object.text);
+  writer.writeDateTime(offsets[1], object.createdAt);
+  writer.writeString(offsets[2], object.desc);
+  writer.writeString(offsets[3], object.languageCode);
+  writer.writeBool(offsets[4], object.onLearnVocabulary);
+  writer.writeBool(offsets[5], object.onShowVocabulary);
+  writer.writeString(offsets[6], object.sourceWord);
+  writer.writeString(offsets[7], object.text);
 }
 
 VocabularyStorageModel _vocabularyStorageModelDeserialize(
@@ -154,11 +211,14 @@ VocabularyStorageModel _vocabularyStorageModelDeserialize(
 ) {
   final object = VocabularyStorageModel();
   object.bookId = reader.readString(offsets[0]);
-  object.desc = reader.readStringOrNull(offsets[1]);
+  object.createdAt = reader.readDateTime(offsets[1]);
+  object.desc = reader.readStringOrNull(offsets[2]);
   object.id = id;
-  object.languageCode = reader.readString(offsets[2]);
-  object.sourceWord = reader.readString(offsets[3]);
-  object.text = reader.readString(offsets[4]);
+  object.languageCode = reader.readString(offsets[3]);
+  object.onLearnVocabulary = reader.readBool(offsets[4]);
+  object.onShowVocabulary = reader.readBool(offsets[5]);
+  object.sourceWord = reader.readString(offsets[6]);
+  object.text = reader.readString(offsets[7]);
   return object;
 }
 
@@ -172,12 +232,18 @@ P _vocabularyStorageModelDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readBool(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -208,6 +274,24 @@ extension VocabularyStorageModelQueryWhereSort
   anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterWhere>
+  anyOnShowVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'onShowVocabulary'),
+      );
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterWhere>
+  anyOnLearnVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'onLearnVocabulary'),
+      );
     });
   }
 
@@ -252,6 +336,15 @@ extension VocabularyStorageModelQueryWhereSort
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'languageCode'),
+      );
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterWhere>
+  anyCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'createdAt'),
       );
     });
   }
@@ -348,6 +441,132 @@ extension VocabularyStorageModelQueryWhere
           includeUpper: includeUpper,
         ),
       );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  onShowVocabularyEqualTo(bool onShowVocabulary) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'onShowVocabulary',
+          value: [onShowVocabulary],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  onShowVocabularyNotEqualTo(bool onShowVocabulary) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onShowVocabulary',
+                lower: [],
+                upper: [onShowVocabulary],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onShowVocabulary',
+                lower: [onShowVocabulary],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onShowVocabulary',
+                lower: [onShowVocabulary],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onShowVocabulary',
+                lower: [],
+                upper: [onShowVocabulary],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  onLearnVocabularyEqualTo(bool onLearnVocabulary) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'onLearnVocabulary',
+          value: [onLearnVocabulary],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  onLearnVocabularyNotEqualTo(bool onLearnVocabulary) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onLearnVocabulary',
+                lower: [],
+                upper: [onLearnVocabulary],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onLearnVocabulary',
+                lower: [onLearnVocabulary],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onLearnVocabulary',
+                lower: [onLearnVocabulary],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'onLearnVocabulary',
+                lower: [],
+                upper: [onLearnVocabulary],
+                includeUpper: false,
+              ),
+            );
+      }
     });
   }
 
@@ -1287,6 +1506,126 @@ extension VocabularyStorageModelQueryWhere
       }
     });
   }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  createdAtEqualTo(DateTime createdAt) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'createdAt', value: [createdAt]),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  createdAtNotEqualTo(DateTime createdAt) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [],
+                upper: [createdAt],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [createdAt],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [createdAt],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'createdAt',
+                lower: [],
+                upper: [createdAt],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  createdAtGreaterThan(DateTime createdAt, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'createdAt',
+          lower: [createdAt],
+          includeLower: include,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  createdAtLessThan(DateTime createdAt, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'createdAt',
+          lower: [],
+          upper: [createdAt],
+          includeUpper: include,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  createdAtBetween(
+    DateTime lowerCreatedAt,
+    DateTime upperCreatedAt, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'createdAt',
+          lower: [lowerCreatedAt],
+          includeLower: includeLower,
+          upper: [upperCreatedAt],
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
 }
 
 extension VocabularyStorageModelQueryFilter
@@ -1473,6 +1812,77 @@ extension VocabularyStorageModelQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.greaterThan(property: r'bookId', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  createdAtEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'createdAt', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  createdAtGreaterThan(DateTime value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'createdAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  createdAtLessThan(DateTime value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'createdAt',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  createdAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'createdAt',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
       );
     });
   }
@@ -1941,6 +2351,32 @@ extension VocabularyStorageModelQueryFilter
     VocabularyStorageModel,
     QAfterFilterCondition
   >
+  onLearnVocabularyEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'onLearnVocabulary', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  onShowVocabularyEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'onShowVocabulary', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
   sourceWordEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -2332,6 +2768,20 @@ extension VocabularyStorageModelQuerySortBy
   }
 
   QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
   sortByDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'desc', Sort.asc);
@@ -2356,6 +2806,34 @@ extension VocabularyStorageModelQuerySortBy
   sortByLanguageCodeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'languageCode', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByOnLearnVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onLearnVocabulary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByOnLearnVocabularyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onLearnVocabulary', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByOnShowVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onShowVocabulary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByOnShowVocabularyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onShowVocabulary', Sort.desc);
     });
   }
 
@@ -2410,6 +2888,20 @@ extension VocabularyStorageModelQuerySortThenBy
   }
 
   QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
   thenByDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'desc', Sort.asc);
@@ -2452,6 +2944,34 @@ extension VocabularyStorageModelQuerySortThenBy
   }
 
   QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByOnLearnVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onLearnVocabulary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByOnLearnVocabularyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onLearnVocabulary', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByOnShowVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onShowVocabulary', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByOnShowVocabularyDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'onShowVocabulary', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
   thenBySourceWord() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'sourceWord', Sort.asc);
@@ -2490,6 +3010,13 @@ extension VocabularyStorageModelQueryWhereDistinct
   }
 
   QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QDistinct>
+  distinctByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createdAt');
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QDistinct>
   distinctByDesc({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'desc', caseSensitive: caseSensitive);
@@ -2500,6 +3027,20 @@ extension VocabularyStorageModelQueryWhereDistinct
   distinctByLanguageCode({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'languageCode', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QDistinct>
+  distinctByOnLearnVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'onLearnVocabulary');
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QDistinct>
+  distinctByOnShowVocabulary() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'onShowVocabulary');
     });
   }
 
@@ -2538,6 +3079,13 @@ extension VocabularyStorageModelQueryProperty
     });
   }
 
+  QueryBuilder<VocabularyStorageModel, DateTime, QQueryOperations>
+  createdAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createdAt');
+    });
+  }
+
   QueryBuilder<VocabularyStorageModel, String?, QQueryOperations>
   descProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -2549,6 +3097,20 @@ extension VocabularyStorageModelQueryProperty
   languageCodeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'languageCode');
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, bool, QQueryOperations>
+  onLearnVocabularyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'onLearnVocabulary');
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, bool, QQueryOperations>
+  onShowVocabularyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'onShowVocabulary');
     });
   }
 

@@ -20,6 +20,8 @@ class HttpService {
       'ApiKey': ProjectConst.APP_KEY,
     };
     final baseOptions = BaseOptions(
+      connectTimeout: Duration(seconds: 180),
+      receiveTimeout: Duration(seconds: 180),
       contentType: Headers.jsonContentType,
       headers: header,
       baseUrl: ProjectConst.BASE_URL,

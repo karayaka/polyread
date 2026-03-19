@@ -57,6 +57,7 @@ dependencies:
   screenshot: ^3.0.0
   share_plus: ^7.2.0
   flutter_tts: ^4.2.5
+  flutter_native_splash: ^2.4.7
   
 
 dev_dependencies:
@@ -72,11 +73,26 @@ dev_dependencies:
   isar_community_generator: 
     version: 3.3.0
   build_runner: ^2.7.1
+  flutter_launcher_icons: "^0.14.4"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/polyread.png"  # Sadece iOS için ve eski android için kullanılır (Tam boyutlu, backgroundlu orjinal resim)
+  adaptive_icon_foreground: "assets/polyreadnbgg.png" # Etrafı bol ŞEFFAF boşluklu logo (örn: Ortamın %66'sını kaplayan 1024x1024 kanvas)
+  adaptive_icon_background: "#f8f0fa" # Logunuzun arka plan rengi neyse o (Örn: #FFFFFF, #000000)
+  min_sdk_android: 21
 # The following section is specific to Flutter packages.
+
+flutter_native_splash:
+  color: "#f8f0fa"
+  image: assets/polyreadnbgg.png
+  android_12:
+    image: assets/polyreadnbg1.png
+    icon_background_color: "#f8f0fa"
 flutter:
 
   # The following line ensures that the Material Icons font is

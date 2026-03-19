@@ -1,12 +1,7 @@
 import 'package:polyread/models/dto_models/library_dto_models/library_book_model.dart';
 
 class Books {
-  Books({
-    required this.count,
-    required this.next,
-    required this.previous,
-    required this.results,
-  });
+  Books({required this.count, required this.results, this.next, this.previous});
 
   final int? count;
   final String? next;
@@ -118,8 +113,8 @@ class Result {
     bookPath: formats?.applicationEpubZip ?? "",
     bookCoverPath: formats?.imageJpeg ?? "",
     authors: authors.map((e) => e.name ?? "").toList(),
-    langugeCode: languages[0],
-    summaries: summaries[0],
+    langugeCode: languages.isNotEmpty ? languages.first : "",
+    summaries: summaries.isNotEmpty ? summaries.first : "",
     downloadCount: downloadCount,
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:polyread/core/app_tools/tools.dart';
+import 'package:polyread/core/base_components/custom_info_progres.dart';
 import 'package:polyread/core/base_components/custom_network_image.dart';
 import 'package:polyread/core/base_components/horizontal_selector.dart';
 import 'package:polyread/data/controllers/library_controller.dart';
@@ -35,7 +36,7 @@ class LibraryPage extends GetView<LibraryController> {
         ),
         body: Obx(() {
           if (controller.booksLoading.value) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: CustomInfoProgress());
           } else {
             return RefreshIndicator(
               onRefresh: () => controller.onRefresh(),
