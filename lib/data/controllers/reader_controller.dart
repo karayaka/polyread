@@ -8,14 +8,18 @@ import 'package:polyread/data/controllers/base_controller.dart';
 import 'package:polyread/data/controllers/my_books_controller.dart';
 import 'package:polyread/data/local_storage/models/external_book_storage_model.dart';
 import 'package:polyread/data/local_storage/models/library_storage_model.dart';
+import 'package:polyread/data/local_storage/models/reading_series_model.dart';
 import 'package:polyread/data/repositories/external_book_repository.dart';
 import 'package:polyread/data/repositories/library_repository.dart';
 import 'package:polyread/data/repositories/ps_repository.dart';
+import 'package:polyread/data/repositories/reading_series_repository.dart';
 import 'package:polyread/data/services/library_service.dart';
 import 'package:polyread/models/base_models/select_model.dart';
 import 'package:polyread/models/dto_models/ps_dto_models/ps_dto_model.dart';
 import 'package:polyread/models/dto_models/ps_dto_models/ps_form_result_model.dart';
 import 'package:polyread/models/dto_models/ps_dto_models/ps_page_model.dart';
+import 'package:polyread/models/series_models/earn_series_model.dart';
+import 'package:polyread/models/series_models/series_calculate.dart';
 import 'package:polyread/routing/route_const.dart';
 import 'package:polyread/routing/route_fix.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -30,6 +34,9 @@ class ReaderController extends BaseController {
   String? lastSavedLocationCfi;
   bool firstLoad = false;
   var fontSize = 16.0.obs;
+  var readingStartTime = DateTime.now();
+  late SeriesCalculate currentSeries;
+  var earnSeries = EarnSeriesModel();
   //initial Models
   late File bookFile;
   late GlobalKey<ScaffoldState> scaffoldKey;
@@ -46,6 +53,7 @@ class ReaderController extends BaseController {
   late LibraryRepository _libraryRepository;
   late PsRepository _psRepository;
   late ExternalBookRepository externalBookRepository;
+  late ReadingSeriesRepository _readingSeriesRepository;
   PsDtoModel? psFormModel;
   //Rx
   var bookLoading = true.obs;
@@ -57,6 +65,7 @@ class ReaderController extends BaseController {
   ReaderController() {
     _libraryRepository = Get.find();
     _psRepository = Get.find();
+    _readingSeriesRepository = Get.find();
     externalBookRepository = Get.find();
     scaffoldKey = GlobalKey<ScaffoldState>();
   }
@@ -70,6 +79,8 @@ class ReaderController extends BaseController {
     WakelockPlus.enable();
     super.onInit();
     await loadBook();
+    readingStartTime = DateTime.now();
+    currentSeries = await _readingSeriesRepository.getSeriesCalculate();
   }
 
   //rederi yükler
@@ -224,12 +235,21 @@ class ReaderController extends BaseController {
       isSavedLocation.value = true;
       bookFromDb!.progres = (location.progress * 100).toInt();
       await _libraryRepository.saveLibraryBook(bookFromDb!);
+
+      await _readingSeriesRepository.saveReadingSeries(
+        location.progress,
+        DateTime.now().difference(readingStartTime).inSeconds,
+      );
+      //todo burda okuma süresi ve ileleme kaydet
+      //günlük seri ve okuma süresi üzerinden 2 ayrı rozetlenecek
+      //bildirim home pagede kurulacak yeniden listeleme adımında birkere kuruldu ise bidaha kurulmayacak
     }
   }
 
   //kadiğin yeri kayıt et eventi
   Future<void> askSaveBookmarkOnExit() async {
     var location = await epubController.getCurrentLocation();
+
     if (bookId != null && lastSavedLocationCfi != location.startCfi) {
       Get.defaultDialog(
         title: "Çıkış",
@@ -237,18 +257,28 @@ class ReaderController extends BaseController {
         textCancel: "Hayır",
         textConfirm: "Evet",
         onConfirm: () async {
-          Get.back(); // Close the dialog before saving
+          Get.back<EarnSeriesModel>(
+            result: earnSeries,
+          ); // Close the dialog before saving
           await saveBookmark();
-          Get.back<bool>(result: true);
+          var series = await _readingSeriesRepository.getSeriesCalculate();
+          earnSeries.isStreakEarned =
+              (currentSeries.seriesLevel < series.seriesLevel);
+          earnSeries.streakLevel = series.seriesLevel;
+          earnSeries.isTimeEarned =
+              (currentSeries.readingTimeLevel < series.readingTimeLevel);
+          earnSeries.timeLevel = series.readingTimeLevel;
+          //todo burada seri artışı için bildirim gönderilecek
+          Get.back<EarnSeriesModel>(result: earnSeries);
         },
         onCancel: () {
-          Get.back();
+          Get.back<EarnSeriesModel>(result: earnSeries);
         },
       );
     } else if (bookId == null) {
       await saveBookFromExternal(true);
     } else {
-      Get.back<bool>(result: true);
+      Get.back<EarnSeriesModel>(result: earnSeries);
     }
   }
 
@@ -285,13 +315,13 @@ class ReaderController extends BaseController {
             .deleteExternalBookHistoryByPath(bookPath ?? "");
         if (isBack) {
           await saveBookmark();
-          Get.back<bool>(result: true);
+          Get.back<EarnSeriesModel>(result: earnSeries);
         }
       },
       onCancel: () {
-        Get.back<bool>(result: true);
+        Get.back<EarnSeriesModel>(result: earnSeries);
         if (isBack) {
-          Get.back<bool>(result: true);
+          Get.back<EarnSeriesModel>(result: earnSeries);
         }
       },
     );

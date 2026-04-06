@@ -9,6 +9,7 @@ import 'package:polyread/data/services/external_book_service.dart';
 import 'package:polyread/data/services/library_service.dart';
 import 'package:polyread/models/base_models/select_model.dart';
 import 'package:polyread/routing/route_const.dart';
+import 'package:polyread/models/series_models/earn_series_model.dart';
 
 class MyBooksController extends BaseController {
   late LibraryRepository db;
@@ -88,10 +89,21 @@ class MyBooksController extends BaseController {
   }
 
   Future toReaderPage(LibraryStorageModel book) async {
-    await Get.toNamed(
+    var result = await Get.toNamed(
       RouteConst.readerPage,
       arguments: {"bookId": book.bookId, "bookPath": book.bookPath},
     );
+    if (result is EarnSeriesModel &&
+        (result.isStreakEarned || result.isTimeEarned)) {
+      Get.toNamed(RouteConst.shareSeriesPage, arguments: result);
+    }
+    var rstl = EarnSeriesModel(
+      timeLevel: 2,
+      isTimeEarned: true,
+      streakLevel: 2,
+      isStreakEarned: true,
+    );
+    Get.toNamed(RouteConst.shareSeriesPage, arguments: rstl);
     await getMyBooks();
   }
 

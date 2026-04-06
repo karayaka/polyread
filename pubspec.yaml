@@ -58,6 +58,10 @@ dependencies:
   share_plus: ^7.2.0
   flutter_tts: ^4.2.5
   flutter_native_splash: ^2.4.7
+  flutter_local_notifications: ^21.0.0
+  timezone: ^0.11.0
+  store_redirect: ^2.0.4
+  flutter_in_store_app_version_checker: ^2.0.0
   
 
 dev_dependencies:

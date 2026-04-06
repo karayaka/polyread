@@ -69,9 +69,10 @@ class VocabularyController extends BaseController {
     try {
       //todo api değişecek post metodu yapıp parametre olarak almak daha sağlıklı yazı içindeki bağzı karakterler hataya. düşürüyor
       var data = prepareServiceModel<VocabularyModel>(
-        await HttpService.instance!.get<VocabularyModel>(
-          "https://tr.cagnaz.com/Translate/$word",
+        await HttpService.instance!.post<VocabularyModel>(
+          "https://tr.cagnaz.com/Translate/",
           VocabularyModel(),
+          {"text": word, "to": "tr"},
         ),
       );
       if (Tools.languges.any((l) => l.key == data?.detectedLanguage)) {

@@ -10,6 +10,7 @@ class VocabularyHistoryController extends BaseController {
 
   var vocabularyHistory = <VocabularyStorageModel>[].obs;
   var isLoading = false.obs;
+  var isPromoVisible = true.obs;
 
   var isSpeaking = false.obs;
   late final FlutterTts flutterTts;

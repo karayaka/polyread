@@ -8,6 +8,8 @@ import 'package:polyread/views/pages/external_history_page.dart';
 import 'package:polyread/views/pages/library_page.dart';
 import 'package:polyread/views/pages/my_books_page.dart';
 import 'package:polyread/views/pages/vocabulary_history_page.dart';
+import 'package:flutter_in_store_app_version_checker/flutter_in_store_app_version_checker.dart';
+import 'package:store_redirect/store_redirect.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,6 +25,61 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _controller = PersistentTabController(initialIndex: 1);
+    _checkAppVersion();
+  }
+
+  void _checkAppVersion() async {
+    try {
+      if (Platform.isAndroid) {
+        const params = InStoreAppVersionCheckerParams(
+          locale: 'tr',
+          androidStore: InStoreAppVersionCheckerAndroidStoreType.apkPure,
+        );
+        var val = await InStoreAppVersionChecker.instance.checkUpdate(params);
+        if (val.canUpdate) {
+          if (mounted) {
+            _showUpdateDialog(val.currentVersion, val.newVersion);
+          }
+        }
+      } else {
+        const params = InStoreAppVersionCheckerParams(locale: 'tr');
+        var val = await InStoreAppVersionChecker.instance.checkUpdate(params);
+        if (val.canUpdate) {
+          if (mounted) {
+            _showUpdateDialog(val.currentVersion, val.newVersion);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Version check error: $e");
+    }
+  }
+
+  void _showUpdateDialog(String? currentVersion, String? newVersion) {
+    Get.dialog(
+      barrierDismissible: true, // Kullanıcı boşluğa tıklayarak kapatabilir.
+      AlertDialog(
+        title: const Text("Yeni Güncelleme Mevcut!"),
+        content: Text(
+          "Uygulamanın yeni bir sürümü yayınlandı.\nDaha iyi bir deneyim için lütfen uygulamayı güncelleyin.\n\n"
+          "Mevcut Sürüm: ${currentVersion ?? ''}\n"
+          "Yeni Sürüm: ${newVersion ?? ''}",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text("Daha Sonra"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              StoreRedirect.redirect(); // Uygulamanın kendi App ID'sini otomatik algılayıp mağazayı açar.
+              Get.back();
+            },
+            child: const Text("Güncelle"),
+          ),
+        ],
+      ),
+    );
   }
 
   List<Widget> _buildScreens() {

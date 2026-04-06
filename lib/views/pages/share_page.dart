@@ -175,46 +175,49 @@ class SharePage extends GetView<ShareController> {
 
       return RepaintBoundary(
         key: controller.screenshotKey,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: controller.backgroundColor.value,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.15),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.format_quote_rounded,
-                size: 48,
-                color: controller.textColor.value.withOpacity(0.15),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                controller.text.value,
-                textAlign: controller.textAlign.value,
-                style: TextStyle(
-                  color: controller.textColor.value,
-                  fontSize: controller.fontSize.value,
-                  fontWeight: controller.fontWeight.value,
-                  decoration: isUnderlined ? TextDecoration.underline : null,
-                  decorationColor: controller.textColor.value,
-                  height: 1.6,
+        child: AspectRatio(
+          aspectRatio: 4 / 5,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: controller.backgroundColor.value,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
                 ),
-              ),
-              const SizedBox(height: 24),
-              Divider(
-                color: controller.textColor.value.withOpacity(0.2),
-                thickness: 1,
-              ),
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.format_quote_rounded,
+                  size: 48,
+                  color: controller.textColor.value.withOpacity(0.15),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  controller.text.value,
+                  textAlign: controller.textAlign.value,
+                  style: TextStyle(
+                    color: controller.textColor.value,
+                    fontSize: controller.fontSize.value,
+                    fontWeight: controller.fontWeight.value,
+                    decoration: isUnderlined ? TextDecoration.underline : null,
+                    decorationColor: controller.textColor.value,
+                    height: 1.6,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Divider(
+                  color: controller.textColor.value.withOpacity(0.2),
+                  thickness: 1,
+                ),
               const SizedBox(height: 16),
               if (controller.bookTitle.isNotEmpty)
                 Text(
@@ -258,6 +261,7 @@ class SharePage extends GetView<ShareController> {
               ),
             ],
           ),
+        ),
         ),
       );
     });

@@ -5,6 +5,7 @@ import 'package:polyread/core/base_components/book_progres_component.dart';
 import 'package:polyread/core/base_components/custom_file_image_component.dart';
 import 'package:polyread/data/controllers/my_books_controller.dart';
 import 'package:polyread/data/local_storage/models/library_storage_model.dart';
+import 'package:polyread/routing/route_const.dart';
 
 class MyBooksPage extends GetView<MyBooksController> {
   const MyBooksPage({super.key});
@@ -23,6 +24,14 @@ class MyBooksPage extends GetView<MyBooksController> {
             "Kitaplarım",
             style: TextStyle(fontWeight: FontWeight.w600),
           ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () {
+                Get.toNamed(RouteConst.profilePage);
+              },
+            ),
+          ],
         ),
         body: Obx(() {
           if (controller.myBooksLoading.value) {

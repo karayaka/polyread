@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:polyread/models/series_models/earn_series_model.dart';
 import 'package:polyread/models/service_models/external_book_service_model.dart';
 import 'package:polyread/routing/route_const.dart';
 

@@ -234,6 +234,7 @@ class ReaderPage extends GetView<ReaderController> {
       VocabularyComponent(
         word: word,
         bookId: controller.bookFromDb?.bookId ?? "",
+        Id: controller.bookFromDb?.id ?? 0,
       ),
     );
     controller.epubController.clearSelection();

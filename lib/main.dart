@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:polyread/data/bindings/initial_binding.dart';
 import 'package:polyread/data/services/external_book_service.dart';
+import 'package:polyread/data/services/notification_service.dart';
 import 'package:polyread/routing/route_const.dart';
 import 'package:polyread/routing/route_pages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final notificationService = NotificationService();
+
+  await notificationService.init();
+
+  // 🔔 ANDROID 13+ izin iste
+  await notificationService.requestAndroidPermission();
   await GetStorage.init();
 
   runApp(MyApp());

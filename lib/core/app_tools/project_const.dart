@@ -8,4 +8,6 @@ class ProjectConst {
   static const LibraryBookStoregeKey = "library_storage_models";
   static const ExternalBookHistoryKey = "ExternalBookHistory";
   static const PsStorageKey = "PsStorageKey";
+  static const ReadingSeriesStoregeKey = "ReadingSeriesStoregeKey";
+  static const ReadingSeriesDeleteDay = 10;
 }

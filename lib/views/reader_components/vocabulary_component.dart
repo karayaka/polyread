@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:polyread/data/controllers/vocabulary_controller.dart';
+import 'package:polyread/routing/route_fix.dart';
 
 class VocabularyComponent extends GetView<VocabularyController> {
   const VocabularyComponent({
     super.key,
     required this.word,
     required this.bookId,
+    required this.Id,
   });
   final String word;
   final String bookId;
+  final int Id;
 
   @override
   Widget build(BuildContext context) {
@@ -134,6 +137,28 @@ class VocabularyComponent extends GetView<VocabularyController> {
                           ],
                         ),
                         const SizedBox(height: 24),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "TEXT",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.6),
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                RouteFix.toSharePage(data.sourceText ?? "", Id);
+                              },
+                              icon: Icon(Icons.share_rounded),
+                            ),
+                          ],
+                        ),
 
                         // Source Text
                         Text(
@@ -153,16 +178,30 @@ class VocabularyComponent extends GetView<VocabularyController> {
                         ),
 
                         // Translation Section
-                        Text(
-                          "ANLAMI",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(
-                              context,
-                            ).primaryColor.withValues(alpha: 0.6),
-                            letterSpacing: 1.2,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "ANLAMI",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.6),
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                RouteFix.toSharePage(
+                                  data.translation ?? "",
+                                  Id,
+                                );
+                              },
+                              icon: Icon(Icons.share_rounded),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         Text(
