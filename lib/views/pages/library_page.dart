@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:polyread/core/app_tools/tools.dart';
 import 'package:polyread/core/base_components/custom_info_progres.dart';
 import 'package:polyread/core/base_components/custom_network_image.dart';
@@ -54,59 +55,78 @@ class LibraryPage extends GetView<LibraryController> {
             );
           }
         }),
+        bottomNavigationBar: Obx(() {
+          if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+            return SafeArea(
+              child: SizedBox(
+                width: controller.bannerAd!.size.width.toDouble(),
+                height: controller.bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: controller.bannerAd!),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
       ),
     );
   }
 
   Widget _bookGrid() => Obx(() {
-    final books = controller.books;
-    return MasonryGridView.count(
-      controller: controller.scrollController,
-      crossAxisCount: 2,
-      mainAxisSpacing: 8,
-      crossAxisSpacing: 8,
-      padding: const EdgeInsets.all(8),
-      itemCount: books.length,
-      itemBuilder: (context, i) {
-        final book = books[i];
-        final imageUrl = book.bookCoverPath;
+        final books = controller.books;
+        if (books.isEmpty && !controller.booksLoading.value) {
+          return const Center(child: Text("Sonuç bulunamadı"));
+        }
 
-        return GestureDetector(
-          onTap: () {
-            controller.selectedBook = book;
-            Get.toNamed(RouteConst.bookDetail);
+        return MasonryGridView.count(
+          controller: controller.scrollController,
+          crossAxisCount: 2,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          padding: const EdgeInsets.all(8),
+          itemCount: books.length,
+          itemBuilder: (context, i) {
+            return _buildBookCard(books[i]);
           },
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              color: Colors.grey[200],
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Hero(
-                    tag: book.bookId,
-                    child: CustomNetworkImage(url: imageUrl ?? ""),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      book.bookTitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         );
+      });
+
+  Widget _buildBookCard(book) {
+    final imageUrl = book.bookCoverPath;
+
+    return GestureDetector(
+      onTap: () {
+        controller.selectedBook = book;
+        Get.toNamed(RouteConst.bookDetail);
       },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          color: Colors.grey[200],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Hero(
+                tag: book.bookId,
+                child: CustomNetworkImage(url: imageUrl ?? ""),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  book.bookTitle,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
-  });
+  }
 
   void _getSeacrhPanel() {
     Get.bottomSheet(
@@ -185,5 +205,25 @@ class LibraryPage extends GetView<LibraryController> {
         ),
       ),
     );
+  }
+}
+
+class KeepAliveAdWidget extends StatefulWidget {
+  final AdWithView ad;
+  const KeepAliveAdWidget({super.key, required this.ad});
+
+  @override
+  State<KeepAliveAdWidget> createState() => _KeepAliveAdWidgetState();
+}
+
+class _KeepAliveAdWidgetState extends State<KeepAliveAdWidget>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return AdWidget(ad: widget.ad);
   }
 }

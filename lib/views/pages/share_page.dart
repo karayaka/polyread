@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:polyread/core/base_components/simple_color_picker.dart';
 import 'package:polyread/data/controllers/share_controller.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class SharePage extends GetView<ShareController> {
   const SharePage({super.key});
@@ -44,6 +45,19 @@ class SharePage extends GetView<ShareController> {
                 children: [
                   _buildPreviewContainer(),
                   const SizedBox(height: 16),
+                  Obx(() {
+                    if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: SizedBox(
+                          width: controller.bannerAd!.size.width.toDouble(),
+                          height: controller.bannerAd!.size.height.toDouble(),
+                          child: AdWidget(ad: controller.bannerAd!),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
                   _buildEditorPanel(context),
                 ],
               ),
@@ -185,7 +199,7 @@ class SharePage extends GetView<ShareController> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.15),
+                  color: Colors.black.withValues(alpha: 0.15),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -198,7 +212,7 @@ class SharePage extends GetView<ShareController> {
                 Icon(
                   Icons.format_quote_rounded,
                   size: 48,
-                  color: controller.textColor.value.withOpacity(0.15),
+                  color: controller.textColor.value.withValues(alpha: 0.15),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -215,53 +229,55 @@ class SharePage extends GetView<ShareController> {
                 ),
                 const SizedBox(height: 24),
                 Divider(
-                  color: controller.textColor.value.withOpacity(0.2),
+                  color: controller.textColor.value.withValues(alpha: 0.2),
                   thickness: 1,
                 ),
-              const SizedBox(height: 16),
-              if (controller.bookTitle.isNotEmpty)
-                Text(
-                  controller.bookTitle,
-                  style: TextStyle(
-                    color: controller.textColor.value,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              if (controller.bookAuthors.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  "Yazar: ${controller.bookAuthors}",
-                  style: TextStyle(
-                    color: controller.textColor.value.withOpacity(0.7),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Icon(
-                    Icons.auto_stories_rounded,
-                    size: 14,
-                    color: controller.textColor.value.withOpacity(0.5),
-                  ),
-                  const SizedBox(width: 4),
+                const SizedBox(height: 16),
+                if (controller.bookTitle.isNotEmpty)
                   Text(
-                    "Polyread ile Paylaşıldı",
+                    controller.bookTitle,
                     style: TextStyle(
-                      color: controller.textColor.value.withOpacity(0.5),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
+                      color: controller.textColor.value,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                if (controller.bookAuthors.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    "Yazar: ${controller.bookAuthors}",
+                    style: TextStyle(
+                      color: controller.textColor.value.withValues(alpha: 0.7),
+                      fontSize: 12,
                     ),
                   ),
                 ],
-              ),
-            ],
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Icon(
+                      Icons.auto_stories_rounded,
+                      size: 14,
+                      color: controller.textColor.value.withValues(alpha: 0.5),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "Polyread ile Paylaşıldı",
+                      style: TextStyle(
+                        color: controller.textColor.value.withValues(
+                          alpha: 0.5,
+                        ),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
         ),
       );
     });
@@ -360,7 +376,9 @@ class SharePage extends GetView<ShareController> {
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
             color: active
-                ? Theme.of(Get.context!).colorScheme.primary.withOpacity(0.15)
+                ? Theme.of(
+                    Get.context!,
+                  ).colorScheme.primary.withValues(alpha: 0.15)
                 : Colors.grey.shade50,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -411,14 +429,14 @@ class SharePage extends GetView<ShareController> {
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [color, color.withOpacity(0.8)],
+            colors: [color, color.withValues(alpha: 0.8)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.3),
+              color: color.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -503,7 +521,7 @@ class SharePage extends GetView<ShareController> {
           boxShadow: isActive
               ? [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polyread/data/services/external_book_service.dart';
@@ -12,10 +13,11 @@ void main() async {
   final notificationService = NotificationService();
 
   await notificationService.init();
+  await MobileAds.instance.initialize();
 
-  // 🔔 ANDROID 13+ izin iste
   await notificationService.requestAndroidPermission();
   await GetStorage.init();
+  await notificationService.scheduleDailyReminder();
 
   runApp(MyApp());
 
@@ -33,8 +35,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -42,7 +42,6 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       getPages: RoutePages.pages,
       initialRoute: RouteConst.splashScrean,
-      //home: HomePage(), //todo: splash yapılacak
     );
   }
 }
@@ -52,3 +51,7 @@ class MyApp extends StatelessWidget {
 //modeller https://openrouter.ai/models?max_price=0.1
 //kullandığım model https://openrouter.ai/arcee-ai/trinity-large-preview:free/api
 //api llm api key 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
+//todo reader page içindeki çeviri ve diğer özellikler için  reklam eklenecek
+//todo indirme için geçiş reklamı eklenecek
+//todo share ayfasına banner eklenecek
+//todo rozeet paylaşma sayfasına banner eklenebilir

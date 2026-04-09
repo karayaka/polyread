@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:polyread/core/base_components/book_circular_progress_component.dart';
 import 'package:polyread/core/base_components/custom_network_image.dart';
 import 'package:polyread/data/controllers/library_controller.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class LibraryDetailPage extends GetView<LibraryController> {
   const LibraryDetailPage({super.key});
@@ -88,7 +89,7 @@ class LibraryDetailPage extends GetView<LibraryController> {
                         } else {
                           return OutlinedButton.icon(
                             onPressed: () {
-                              controller.dowloandBook(
+                              controller.showInterstitialAdAndDownload(
                                 book.bookId,
                                 book.bookPath,
                               );
@@ -117,6 +118,18 @@ class LibraryDetailPage extends GetView<LibraryController> {
           ),
         ],
       ),
+      bottomNavigationBar: Obx(() {
+        if (controller.isDetailBannerLoaded.value && controller.detailBannerAd != null) {
+          return SafeArea(
+            child: SizedBox(
+              width: controller.detailBannerAd!.size.width.toDouble(),
+              height: controller.detailBannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: controller.detailBannerAd!),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      }),
     );
   }
 }

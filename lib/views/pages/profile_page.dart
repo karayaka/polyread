@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:polyread/core/base_components/badge_card_component.dart';
 import 'package:polyread/data/controllers/profile_controller.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ProfilePage extends GetView<ProfileController> {
   const ProfilePage({super.key});
@@ -49,6 +50,18 @@ class ProfilePage extends GetView<ProfileController> {
             ],
           ),
         );
+      }),
+      bottomNavigationBar: Obx(() {
+        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+          return SafeArea(
+            child: SizedBox(
+              width: controller.bannerAd!.size.width.toDouble(),
+              height: controller.bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: controller.bannerAd!),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
       }),
     );
   }

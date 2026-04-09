@@ -91,6 +91,7 @@ class _HomePageState extends State<HomePage> {
     if (Platform.isAndroid) {
       screens.add(const ExternalHistoryPage());
     }
+
     return screens;
   }
 

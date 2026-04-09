@@ -8,9 +8,11 @@ import 'package:polyread/data/repositories/library_repository.dart';
 import 'package:polyread/data/services/http_service.dart';
 import 'package:polyread/data/services/library_service.dart';
 import 'package:polyread/models/base_models/select_model.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:polyread/models/dto_models/library_dto_models/library_book_model.dart';
 import 'package:polyread/models/service_models/book_model.dart';
 import 'package:polyread/routing/route_const.dart';
+import 'package:polyread/data/services/ad_service.dart';
 
 class LibraryController extends BaseController {
   late LibraryRepository db;
@@ -28,6 +30,13 @@ class LibraryController extends BaseController {
   SelectModel? selectedLanguages;
   String q = "";
 
+  BannerAd? bannerAd;
+  var isBannerLoaded = false.obs;
+  BannerAd? detailBannerAd;
+  var isDetailBannerLoaded = false.obs;
+  InterstitialAd? startupInterstitialAd;
+  InterstitialAd? downloadInterstitialAd;
+
   LibraryController() {
     db = Get.find();
   }
@@ -35,6 +44,10 @@ class LibraryController extends BaseController {
   @override
   void onInit() {
     initPage();
+    _loadBannerAd();
+    _loadDetailBannerAd();
+    _loadAndShowStartupInterstitialAd();
+    _loadDownloadInterstitialAd();
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
               scrollController.position.maxScrollExtent - 200 &&
@@ -45,6 +58,117 @@ class LibraryController extends BaseController {
     });
 
     super.onInit();
+  }
+
+  void _loadBannerAd() {
+    bannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  void _loadDetailBannerAd() {
+    detailBannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isDetailBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isDetailBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  void _loadAndShowStartupInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdService.instance.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          startupInterstitialAd = ad;
+          startupInterstitialAd!.fullScreenContentCallback =
+              FullScreenContentCallback(
+                onAdDismissedFullScreenContent: (ad) {
+                  ad.dispose();
+                  startupInterstitialAd = null;
+                },
+                onAdFailedToShowFullScreenContent: (ad, error) {
+                  ad.dispose();
+                  startupInterstitialAd = null;
+                },
+              );
+          startupInterstitialAd!.show();
+        },
+        onAdFailedToLoad: (error) {
+          startupInterstitialAd = null;
+        },
+      ),
+    );
+  }
+
+  void _loadDownloadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdService.instance.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          downloadInterstitialAd = ad;
+        },
+        onAdFailedToLoad: (error) {
+          downloadInterstitialAd = null;
+          print('Download InterstitialAd failed to load: $error');
+        },
+      ),
+    );
+  }
+
+  void showInterstitialAdAndDownload(String id, String url) {
+    if (downloadInterstitialAd != null) {
+      downloadInterstitialAd!.fullScreenContentCallback =
+          FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              downloadInterstitialAd = null;
+              _loadDownloadInterstitialAd(); // Prepare the next ad
+              dowloandBook(id, url);
+            },
+            onAdFailedToShowFullScreenContent: (ad, error) {
+              ad.dispose();
+              downloadInterstitialAd = null;
+              _loadDownloadInterstitialAd();
+              dowloandBook(id, url);
+            },
+          );
+      downloadInterstitialAd!.show();
+    } else {
+      // Ad isn't ready or failed to load, just continue the process
+      dowloandBook(id, url);
+      _loadDownloadInterstitialAd();
+    }
+  }
+
+  @override
+  void onClose() {
+    bannerAd?.dispose();
+    detailBannerAd?.dispose();
+    startupInterstitialAd?.dispose();
+    downloadInterstitialAd?.dispose();
+    super.onClose();
   }
 
   void initPage() async {

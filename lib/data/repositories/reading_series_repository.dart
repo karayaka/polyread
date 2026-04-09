@@ -70,7 +70,9 @@ class ReadingSeriesRepository {
     //10 günden eski verileri sil
     deleteReadingSeries();
     return SeriesCalculate(
-      readingTime: (readingTime ~/ 60) ~/ lng, //günlük dakika hesabı
+      readingTime: readingTime != 0
+          ? (readingTime ~/ 60) ~/ lng
+          : 0, //günlük dakika hesabı
       series: nseriesDay,
     );
   }

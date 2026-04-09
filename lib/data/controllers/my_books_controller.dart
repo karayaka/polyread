@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:polyread/data/controllers/base_controller.dart';
 import 'package:polyread/data/local_storage/models/library_storage_model.dart';
+import 'package:polyread/data/services/ad_service.dart';
 import 'package:polyread/data/repositories/library_repository.dart';
 import 'package:polyread/data/services/external_book_service.dart';
 import 'package:polyread/data/services/library_service.dart';
@@ -18,21 +22,46 @@ class MyBooksController extends BaseController {
   var books = RxList<LibraryStorageModel>();
   SelectModel? selectStatus = SelectModel(key: "", value: "Tümü");
 
+  BannerAd? bannerAd;
+  var isBannerLoaded = false.obs;
+
   MyBooksController() {
     db = Get.find();
   }
 
   @override
   void onInit() {
-    getMyBooks();
+    initMybooks();
+    _loadBannerAd();
     super.onInit();
+  }
+
+  void _loadBannerAd() {
+    bannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void onClose() {
+    bannerAd?.dispose();
+    super.onClose();
   }
 
   Future getMyBooks() async {
     try {
-      myBooksLoading.value = true;
       books.value = await db.getAllLibrary();
-      myBooksLoading.value = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ExternalBookService.instance.markAppReady();
       });
@@ -50,24 +79,7 @@ class MyBooksController extends BaseController {
       );
       importLoading.value = true;
       if (result != null) {
-        var uuid = DateTime.now().millisecondsSinceEpoch.toString();
-        var importBook = await LibraryService.instance.importEpub(
-          bookId: "C_$uuid",
-          sourceFile: File(result.paths[0] ?? ""),
-        );
-
-        //kitaba ait okuna datalar kayıt ediliyor
-        var book = LibraryStorageModel();
-        book.authors = importBook.metaData.authors ?? [];
-        book.bookCoverPath = importBook.metaData.coverPath;
-        book.bookPath = importBook.bookPath;
-        book.bookId = importBook.bookId;
-        book.lastLocationCfi = null;
-        book.bookTitle = importBook.metaData.title ?? "";
-        book.langugeCode = importBook.metaData.languages ?? "";
-        book.lastUpdate = DateTime.now();
-        book.progres = 0;
-        var id = await db.saveLibraryBook(book);
+        var id = await saveBookFromPath(result.paths[0] ?? "");
         await toEditMetaDataPage(id);
         importLoading.value = false;
         return true;
@@ -78,6 +90,62 @@ class MyBooksController extends BaseController {
       importLoading.value = false;
       errorMessage(e.toString());
       return false;
+    }
+  }
+
+  Future initMybooks() async {
+    try {
+      myBooksLoading.value = true;
+      var hasAnyBook = await db.getLastSyncDate();
+      if (hasAnyBook == null) {
+        await _loadAssetAndSave("assets/epub/mustafa-kemal-ataturk-nutuk.epub");
+        await _loadAssetAndSave("assets/epub/pg500.epub");
+        await getMyBooks();
+        myBooksLoading.value = false;
+      } else {
+        await getMyBooks();
+        myBooksLoading.value = false;
+      }
+    } catch (e) {
+      myBooksLoading.value = false;
+      errorMessage(e.toString());
+    }
+  }
+
+  Future<void> _loadAssetAndSave(String assetPath) async {
+    try {
+      final byteData = await rootBundle.load(assetPath);
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/${assetPath.split('/').last}');
+      await tempFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+      await saveBookFromPath(tempFile.path);
+    } catch (e) {
+      errorMessage("Asset kitap yüklenirken hata oluştu: $e");
+    }
+  }
+
+  Future<int> saveBookFromPath(String path) async {
+    try {
+      var uuid = DateTime.now().millisecondsSinceEpoch.toString();
+      var importBook = await LibraryService.instance.importEpub(
+        bookId: "C_$uuid",
+        sourceFile: File(path),
+      );
+      //kitaba ait okuna datalar kayıt ediliyor
+      var book = LibraryStorageModel();
+      book.authors = importBook.metaData.authors ?? [];
+      book.bookCoverPath = importBook.metaData.coverPath;
+      book.bookPath = importBook.bookPath;
+      book.bookId = importBook.bookId;
+      book.lastLocationCfi = null;
+      book.bookTitle = importBook.metaData.title ?? "";
+      book.langugeCode = importBook.metaData.languages ?? "";
+      book.lastUpdate = DateTime.now();
+      book.progres = 0;
+      return await db.saveLibraryBook(book);
+    } catch (e) {
+      errorMessage(e.toString());
+      return 0;
     }
   }
 
@@ -97,13 +165,6 @@ class MyBooksController extends BaseController {
         (result.isStreakEarned || result.isTimeEarned)) {
       Get.toNamed(RouteConst.shareSeriesPage, arguments: result);
     }
-    var rstl = EarnSeriesModel(
-      timeLevel: 2,
-      isTimeEarned: true,
-      streakLevel: 2,
-      isStreakEarned: true,
-    );
-    Get.toNamed(RouteConst.shareSeriesPage, arguments: rstl);
     await getMyBooks();
   }
 

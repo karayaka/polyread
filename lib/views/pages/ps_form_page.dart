@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:polyread/core/base_components/custom_tag_selector.dart';
 import 'package:polyread/core/base_components/simple_color_picker.dart';
 import 'package:polyread/data/controllers/ps_form_controller.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class PsFormPage extends GetView<PsFormController> {
   const PsFormPage({super.key});
@@ -21,6 +22,18 @@ class PsFormPage extends GetView<PsFormController> {
           return Center(child: CircularProgressIndicator());
         }
         return _buildForm();
+      }),
+      bottomNavigationBar: Obx(() {
+        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+          return SafeArea(
+            child: SizedBox(
+              width: controller.bannerAd!.size.width.toDouble(),
+              height: controller.bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: controller.bannerAd!),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
       }),
     );
   }

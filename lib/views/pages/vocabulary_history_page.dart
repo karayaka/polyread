@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:polyread/core/app_tools/tools.dart';
 import 'package:polyread/core/base_components/custom_network_image.dart';
 import 'package:polyread/data/controllers/vocabulary_history_controller.dart';
@@ -65,6 +66,18 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
           ),
         ],
       ),
+      bottomNavigationBar: Obx(() {
+        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+          return SafeArea(
+            child: SizedBox(
+              width: controller.bannerAd!.size.width.toDouble(),
+              height: controller.bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: controller.bannerAd!),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      }),
     );
   }
 

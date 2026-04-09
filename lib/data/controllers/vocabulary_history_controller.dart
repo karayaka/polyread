@@ -4,6 +4,8 @@ import 'package:polyread/core/app_tools/tools.dart';
 import 'package:polyread/data/controllers/base_controller.dart';
 import 'package:polyread/data/local_storage/models/vocabulary_storage_model.dart';
 import 'package:polyread/data/repositories/vocabulary_repository.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:polyread/data/services/ad_service.dart';
 
 class VocabularyHistoryController extends BaseController {
   late final VocabularyRepository _vocabularyRepository;
@@ -12,12 +14,16 @@ class VocabularyHistoryController extends BaseController {
   var isLoading = false.obs;
   var isPromoVisible = true.obs;
 
+  BannerAd? bannerAd;
+  var isBannerLoaded = false.obs;
+
   var isSpeaking = false.obs;
   late final FlutterTts flutterTts;
 
   @override
   void onInit() {
     super.onInit();
+    _loadBannerAd();
     flutterTts = FlutterTts();
     _vocabularyRepository = Get.find<VocabularyRepository>();
 
@@ -31,6 +37,29 @@ class VocabularyHistoryController extends BaseController {
       isSpeaking.value = false;
       errorMessage("Seslendirme hatası: $msg");
     });
+  }
+
+  void _loadBannerAd() {
+    bannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void onClose() {
+    bannerAd?.dispose();
+    super.onClose();
   }
 
   Map<String, List<VocabularyStorageModel>> get groupedVocabulary {

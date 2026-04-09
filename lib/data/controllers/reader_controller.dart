@@ -23,6 +23,8 @@ import 'package:polyread/models/series_models/series_calculate.dart';
 import 'package:polyread/routing/route_const.dart';
 import 'package:polyread/routing/route_fix.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:polyread/data/services/ad_service.dart';
 
 class ReaderController extends BaseController {
   //initials var
@@ -62,6 +64,12 @@ class ReaderController extends BaseController {
   var showbottomBar = true.obs;
   var isSavedLocation = false.obs;
 
+  BannerAd? settingBannerAd;
+  var isSettingBannerLoaded = false.obs;
+
+  BannerAd? psListBannerAd;
+  var isPsListBannerLoaded = false.obs;
+
   ReaderController() {
     _libraryRepository = Get.find();
     _psRepository = Get.find();
@@ -78,9 +86,42 @@ class ReaderController extends BaseController {
     bookName = Get.arguments['bookName'];
     WakelockPlus.enable();
     super.onInit();
+    _loadBannerAd();
     await loadBook();
     readingStartTime = DateTime.now();
     currentSeries = await _readingSeriesRepository.getSeriesCalculate();
+  }
+
+  void _loadBannerAd() {
+    settingBannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isSettingBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isSettingBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+
+    psListBannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isPsListBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isPsListBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
   }
 
   //rederi yükler
@@ -127,6 +168,7 @@ class ReaderController extends BaseController {
   }
 
   Future loadTagselector() async {
+    tagSelectModel.clear();
     tagSelectModel.add(SelectModel(key: "", value: "Tümü"));
     var tags = await _psRepository.getSuggestionTags();
     for (var tag in tags) {
@@ -240,9 +282,6 @@ class ReaderController extends BaseController {
         location.progress,
         DateTime.now().difference(readingStartTime).inSeconds,
       );
-      //todo burda okuma süresi ve ileleme kaydet
-      //günlük seri ve okuma süresi üzerinden 2 ayrı rozetlenecek
-      //bildirim home pagede kurulacak yeniden listeleme adımında birkere kuruldu ise bidaha kurulmayacak
     }
   }
 
@@ -257,9 +296,7 @@ class ReaderController extends BaseController {
         textCancel: "Hayır",
         textConfirm: "Evet",
         onConfirm: () async {
-          Get.back<EarnSeriesModel>(
-            result: earnSeries,
-          ); // Close the dialog before saving
+          Get.back<bool>(result: true);
           await saveBookmark();
           var series = await _readingSeriesRepository.getSeriesCalculate();
           earnSeries.isStreakEarned =
@@ -268,7 +305,6 @@ class ReaderController extends BaseController {
           earnSeries.isTimeEarned =
               (currentSeries.readingTimeLevel < series.readingTimeLevel);
           earnSeries.timeLevel = series.readingTimeLevel;
-          //todo burada seri artışı için bildirim gönderilecek
           Get.back<EarnSeriesModel>(result: earnSeries);
         },
         onCancel: () {
@@ -417,6 +453,8 @@ class ReaderController extends BaseController {
 
   @override
   void onClose() {
+    settingBannerAd?.dispose();
+    psListBannerAd?.dispose();
     WakelockPlus.disable();
     super.onClose();
   }

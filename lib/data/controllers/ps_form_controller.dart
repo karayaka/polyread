@@ -5,6 +5,8 @@ import 'package:polyread/models/dto_models/ps_dto_models/ps_dto_model.dart';
 import 'package:polyread/models/dto_models/ps_dto_models/ps_form_result_model.dart';
 import 'package:polyread/models/dto_models/ps_dto_models/ps_page_model.dart';
 import 'package:textfield_tags/textfield_tags.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:polyread/data/services/ad_service.dart';
 
 class PsFormController extends BaseController {
   var formLoading = false.obs;
@@ -17,13 +19,40 @@ class PsFormController extends BaseController {
   var isUnderline = false.obs;
   var selectedColorHex = 4294967295.obs;
 
+  BannerAd? bannerAd;
+  var isBannerLoaded = false.obs;
+
   @override
   void onInit() {
     _psRepository = Get.find();
     _pageModel = PsPageModel.fromMap(Get.arguments); //todo
     tagController = StringTagController();
+    _loadBannerAd();
     loadPsForm();
     super.onInit();
+  }
+
+  void _loadBannerAd() {
+    bannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void onClose() {
+    bannerAd?.dispose();
+    super.onClose();
   }
 
   Future loadPsForm() async {

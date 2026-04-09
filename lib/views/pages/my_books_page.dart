@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:polyread/core/base_components/book_progres_component.dart';
@@ -58,6 +59,18 @@ class MyBooksPage extends GetView<MyBooksController> {
             icon: const Icon(Icons.add),
             label: const Text("Kitap Ekle"),
           );
+        }),
+        bottomNavigationBar: Obx(() {
+          if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+            return SafeArea(
+              child: SizedBox(
+                width: controller.bannerAd!.size.width.toDouble(),
+                height: controller.bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: controller.bannerAd!),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
         }),
       ),
     );

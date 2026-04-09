@@ -8,6 +8,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:polyread/data/controllers/base_controller.dart';
 import 'package:polyread/data/repositories/library_repository.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:polyread/data/services/ad_service.dart';
 
 class ShareController extends BaseController {
   var text = "".obs;
@@ -28,13 +30,40 @@ class ShareController extends BaseController {
   // Capture key for screenshot
   GlobalKey? screenshotKey;
   //reklemera geçilebilir
+
+  BannerAd? bannerAd;
+  var isBannerLoaded = false.obs;
   @override
   void onInit() {
     text.value = Get.arguments?["text"] ?? "";
     id = Get.arguments?["bookId"] ?? 0;
     _libraryRepository = Get.find<LibraryRepository>();
     super.onInit();
+    _loadBannerAd();
     onLoad();
+  }
+
+  void _loadBannerAd() {
+    bannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void onClose() {
+    bannerAd?.dispose();
+    super.onClose();
   }
 
   Future onLoad() async {

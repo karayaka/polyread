@@ -3,6 +3,7 @@ import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:polyread/data/controllers/reader_controller.dart';
 import 'package:polyread/views/reader_components/book_ps_list_component.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class SettingPanelComponent extends GetView<ReaderController> {
   const SettingPanelComponent({super.key});
@@ -122,6 +123,23 @@ class SettingPanelComponent extends GetView<ReaderController> {
             ),
           ),
           SizedBox(height: 8),
+          Obx(() {
+            if (controller.isSettingBannerLoaded.value && controller.settingBannerAd != null) {
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Center(
+                    child: SizedBox(
+                      width: controller.settingBannerAd!.size.width.toDouble(),
+                      height: controller.settingBannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: controller.settingBannerAd!),
+                    ),
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          }),
         ],
       ),
     );

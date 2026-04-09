@@ -1,6 +1,7 @@
 // ...existing code...
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:polyread/data/controllers/external_history_controller.dart';
 import 'package:polyread/routing/route_const.dart';
 
@@ -105,6 +106,18 @@ class ExternalHistoryPage extends GetView<ExternalHistoryController> {
             );
           },
         );
+      }),
+      bottomNavigationBar: Obx(() {
+        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+          return SafeArea(
+            child: SizedBox(
+              width: controller.bannerAd!.size.width.toDouble(),
+              height: controller.bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: controller.bannerAd!),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
       }),
     );
   }

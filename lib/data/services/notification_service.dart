@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import '../../core/app_tools/words.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._();
@@ -14,7 +16,7 @@ class NotificationService {
   Future<void> init() async {
     tz.initializeTimeZones();
 
-    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const android = AndroidInitializationSettings('@mipmap/launcher_icon');
 
     const ios = DarwinInitializationSettings(
       requestAlertPermission: true, // biz manuel isteyeceğiz
@@ -27,32 +29,33 @@ class NotificationService {
     await _notifications.initialize(settings: settings);
   }
 
-  Future<void> scheduleDailyReminder({
-    required int hour,
-    required int minute,
-    required String title,
-    required String body,
-  }) async {
+  Future<void> scheduleDailyReminder() async {
+    final random = Random();
+    final quote1 = AppWords.quotes[random.nextInt(AppWords.quotes.length)];
+    final quote2 = AppWords.quotes[random.nextInt(AppWords.quotes.length)];
+
+    final nTitle1 = quote1['author'] ?? 'Günün Sözü';
+    final nBody1 = quote1['quote'] ?? 'Okumak güzeldir.';
+
+    final nTitle2 = quote2['author'] ?? 'Günün Sözü';
+    final nBody2 = quote2['quote'] ?? 'Okumak güzeldir.';
+
     final now = tz.TZDateTime.now(tz.local);
     var scheduledDate = tz.TZDateTime(
       tz.local,
       now.year,
       now.month,
-      now.day,
-      hour,
-      minute,
+      (now.day + 1),
+      20,
+      30,
     );
-
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
-    }
 
     await cancelDailyReminder();
 
     await _notifications.zonedSchedule(
       id: 100,
-      title: title,
-      body: body,
+      title: nTitle1,
+      body: nBody1,
       scheduledDate: scheduledDate,
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -67,15 +70,15 @@ class NotificationService {
           presentSound: true,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time, // 🔥 iOS için de önemli
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time, // iOS için de önemli
     );
     scheduledDate.add(Duration(days: 3));
 
     await _notifications.zonedSchedule(
       id: 101,
-      title: title,
-      body: body,
+      title: nTitle2,
+      body: nBody2,
       scheduledDate: scheduledDate,
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -90,12 +93,12 @@ class NotificationService {
           presentSound: true,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time, // 🔥 iOS için de önemli
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
-  // ❌ Notification iptal
+  // Notification iptal
   Future<void> cancelDailyReminder() async {
     await _notifications.cancel(id: 100);
     await _notifications.cancel(id: 101);

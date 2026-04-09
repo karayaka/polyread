@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:polyread/data/controllers/vocabulary_controller.dart';
 import 'package:polyread/routing/route_fix.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class VocabularyComponent extends GetView<VocabularyController> {
   const VocabularyComponent({
@@ -242,6 +243,21 @@ class VocabularyComponent extends GetView<VocabularyController> {
                   ),
                 );
               }
+            }),
+            Obx(() {
+              if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: Center(
+                    child: SizedBox(
+                      width: controller.bannerAd!.size.width.toDouble(),
+                      height: controller.bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: controller.bannerAd!),
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
             }),
           ],
         ),

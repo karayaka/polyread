@@ -7,6 +7,8 @@ import 'package:polyread/data/repositories/vocabulary_repository.dart';
 import 'package:polyread/data/services/http_service.dart';
 import 'package:polyread/models/base_models/select_model.dart';
 import 'package:polyread/models/service_models/vocabulary_model.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:polyread/data/services/ad_service.dart';
 
 class VocabularyController extends BaseController {
   late final VocabularyRepository _vocabularyRepository;
@@ -18,8 +20,12 @@ class VocabularyController extends BaseController {
   late final FlutterTts flutterTts;
   var isSavedToHistory = false.obs;
 
+  BannerAd? bannerAd;
+  var isBannerLoaded = false.obs;
+
   @override
   void onInit() {
+    _loadBannerAd();
     flutterTts = FlutterTts();
     _vocabularyRepository = Get.find<VocabularyRepository>();
 
@@ -38,6 +44,29 @@ class VocabularyController extends BaseController {
     });
 
     super.onInit();
+  }
+
+  void _loadBannerAd() {
+    bannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void onClose() {
+    bannerAd?.dispose();
+    super.onClose();
   }
 
   Future loadVocabulary(String word, String bookId) async {

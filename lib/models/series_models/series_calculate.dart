@@ -1,6 +1,7 @@
 class SeriesCalculate {
   int readingTime;
   int series;
+
   int get readingTimeLevel {
     if (readingTime < 30) {
       return 1;
