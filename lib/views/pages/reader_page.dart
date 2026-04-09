@@ -36,101 +36,106 @@ class ReaderPage extends GetView<ReaderController> {
             drawer: ChapterDrawerComponent(),
             body: Stack(
               children: [
+                // EpubViewer her zaman ağaçta kalır, unmount olmaz
                 Obx(() {
                   if (controller.bookLoading.value) {
-                    return Center(child: CircularProgressIndicator());
-                  } else {
-                    return EpubViewer(
-                      key: ValueKey('epub_${controller.bookFile.path}'),
-                      //initialCfi: controller.bookFromDb?.lastLocationCfi,
-                      epubSource: EpubSource.fromFile(controller.bookFile),
-                      epubController: controller.epubController,
-                      selectAnnotationRange: true,
-                      displaySettings: EpubDisplaySettings(
-                        //fontSize: (controller.fontSize.value).toInt(),
-                        flow: EpubFlow.paginated,
-                        useSnapAnimationAndroid: false, //bu false olamalı
-                        snap: true,
-                        theme: EpubTheme.light(),
-                        allowScriptedContent: true,
-                      ),
-                      onChaptersLoaded: (chapters) {
-                        if (chapters.isNotEmpty) {
-                          controller.chapterLoaded(chapters);
-                        }
-                      },
-                      onEpubLoaded: () {
-                        controller.epubLoaded();
-                      },
-                      onRelocated: (value) {
-                        controller.showbottomBar.value = false;
-                        controller.isSavedLocation.value =
-                            controller.lastSavedLocationCfi == value.startCfi;
-                      },
-                      onSelection:
-                          (
-                            selectedText,
-                            cfiRange,
-                            selectionRect,
-                            viewRect,
-                          ) async {
-                            if (await controller.onSelection(
-                              selectedText,
-                              cfiRange,
-                            )) {
-                              await controller.addPsOrHihglight();
-                            }
+                    return const SizedBox.shrink();
+                  }
+                  return EpubViewer(
+                    key: ValueKey('epub_${controller.bookFile.path}'),
+                    initialCfi: controller.bookFromDb?.lastLocationCfi,
+                    epubSource: EpubSource.fromFile(controller.bookFile),
+                    epubController: controller.epubController,
+                    selectAnnotationRange: true,
+                    displaySettings: EpubDisplaySettings(
+                      flow: EpubFlow.paginated,
+                      useSnapAnimationAndroid: false,
+                      snap: true,
+                      theme: EpubTheme.light(),
+                      allowScriptedContent: true,
+                    ),
+                    onChaptersLoaded: (chapters) {
+                      if (chapters.isNotEmpty) {
+                        controller.chapterLoaded(chapters);
+                      }
+                    },
+                    onEpubLoaded: () {
+                      controller.epubLoaded();
+                    },
+                    onRelocated: (value) {
+                      controller.showbottomBar.value = false;
+                      controller.isSavedLocation.value =
+                          controller.lastSavedLocationCfi == value.startCfi;
+                    },
+                    onSelection: (
+                      selectedText,
+                      cfiRange,
+                      selectionRect,
+                      viewRect,
+                    ) async {
+                      if (await controller.onSelection(
+                        selectedText,
+                        cfiRange,
+                      )) {
+                        await controller.addPsOrHihglight();
+                      }
+                    },
+                    onDeselection: () {
+                      controller.selectionRange = null;
+                      controller.selectedText = null;
+                    },
+                    selectionContextMenu: ContextMenu(
+                      menuItems: [
+                        ContextMenuItem(
+                          title: "Çevir",
+                          id: 1,
+                          action: () {
+                            _showVocabularyPanel(
+                              controller.selectedText ?? "",
+                            );
                           },
-                      onDeselection: () {
-                        controller.selectionRange = null;
-                        controller.selectedText = null;
-                      },
-                      selectionContextMenu: ContextMenu(
-                        menuItems: [
-                          ContextMenuItem(
-                            title: "Çevir",
-                            id: 1,
-                            action: () {
-                              //controller.epubController.addHighlight(cfi: textSelectionCfi);
-                              _showVocabularyPanel(
-                                controller.selectedText ?? "",
-                              );
-                            },
-                          ),
-                          ContextMenuItem(
-                            title: "Not/Vurgula",
-                            id: 2,
-                            action: () async {
-                              await controller.addPsOrHihglight();
-                            },
-                          ),
-                          ContextMenuItem(
-                            title: "Paylaş",
-                            id: 3,
-                            action: () async {
-                              RouteFix.toSharePage(
-                                controller.selectedText ?? "",
-                                controller.bookFromDb?.id ?? 0,
-                              );
-                            },
-                          ),
-                        ],
-                        settings: ContextMenuSettings(
-                          hideDefaultSystemContextMenuItems: true,
                         ),
+                        ContextMenuItem(
+                          title: "Not/Vurgula",
+                          id: 2,
+                          action: () async {
+                            await controller.addPsOrHihglight();
+                          },
+                        ),
+                        ContextMenuItem(
+                          title: "Paylaş",
+                          id: 3,
+                          action: () async {
+                            RouteFix.toSharePage(
+                              controller.selectedText ?? "",
+                              controller.bookFromDb?.id ?? 0,
+                            );
+                          },
+                        ),
+                      ],
+                      settings: ContextMenuSettings(
+                        hideDefaultSystemContextMenuItems: true,
                       ),
-                      onTouchUp: (x, y) async {
-                        if (controller.firstLoad) {
-                          await controller.loadBook();
-                        }
-                        controller.showbottomBar.value =
-                            !controller.showbottomBar.value;
-                        if (controller.selectionRange != null) {
-                          controller.epubController.clearSelection();
-                        }
-                      }, //epubcfi(/6/6!/4/26,/1:131,/1:138)
+                    ),
+                    onTouchUp: (x, y) async {
+                      controller.showbottomBar.value =
+                          !controller.showbottomBar.value;
+                      if (controller.selectionRange != null) {
+                        controller.epubController.clearSelection();
+                      }
+                    },
+                  );
+                }),
+
+                // onEpubLoaded tetiklenene kadar beyaz overlay göster
+                Obx(() {
+                  if (!controller.epubReady.value) {
+                    return Container(
+                      color: Colors.white,
+                      child: const Center(child: CircularProgressIndicator()),
                     );
                   }
+                  return const SizedBox.shrink();
                 }),
 
                 Obx(() {

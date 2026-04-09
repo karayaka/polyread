@@ -58,7 +58,8 @@ class ReaderController extends BaseController {
   late ReadingSeriesRepository _readingSeriesRepository;
   PsDtoModel? psFormModel;
   //Rx
-  var bookLoading = true.obs;
+  var bookLoading = true.obs;  // veri yükleniyor mu?
+  var epubReady = false.obs;   // epub tamamen yüklendi mi (onEpubLoaded sonrası)?
   bool bookLoaded = false;
   var chapterLoading = true.obs;
   var showbottomBar = true.obs;
@@ -152,6 +153,8 @@ class ReaderController extends BaseController {
         );
       }
       bookLoading.value = false;
+      // epubReady sıfırla ki kullanıcı reload yaptığında overlay yeniden gösterilsin
+      epubReady.value = false;
     } catch (e) {
       bookLoading.value = false;
     }
@@ -179,7 +182,7 @@ class ReaderController extends BaseController {
     }
   }
 
-  //epubloadet olduğunda tetiklenir konyroller için
+  //epubloaded olduğunda tetiklenir kontroller için
   void epubLoaded() {
     try {
       if (bookFromDb?.lastLocationCfi != null && firstLoad) {
@@ -188,7 +191,9 @@ class ReaderController extends BaseController {
         loadHighlights();
       }
       firstLoad = false;
+      epubReady.value = true; // Overlay'i kaldır
     } catch (e) {
+      epubReady.value = true; // Hata olsa bile overlay kaldır
       errorMessage(e.toString());
     }
   }
