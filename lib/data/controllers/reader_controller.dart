@@ -58,8 +58,8 @@ class ReaderController extends BaseController {
   late ReadingSeriesRepository _readingSeriesRepository;
   PsDtoModel? psFormModel;
   //Rx
-  var bookLoading = true.obs;  // veri yükleniyor mu?
-  var epubReady = false.obs;   // epub tamamen yüklendi mi (onEpubLoaded sonrası)?
+  var bookLoading = true.obs; // veri yükleniyor mu?
+  var epubReady = false.obs; // epub tamamen yüklendi mi (onEpubLoaded sonrası)?
   bool bookLoaded = false;
   var chapterLoading = true.obs;
   var showbottomBar = true.obs;

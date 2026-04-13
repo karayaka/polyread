@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   flutter_inappwebview_windows
+  flutter_timezone
   flutter_tts
   isar_community_flutter_libs
   share_plus

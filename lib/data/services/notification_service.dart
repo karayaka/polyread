@@ -16,10 +16,12 @@ class NotificationService {
   Future<void> init() async {
     tz.initializeTimeZones();
 
+    tz.setLocalLocation(tz.getLocation('Europe/Istanbul'));
+
     const android = AndroidInitializationSettings('@mipmap/launcher_icon');
 
     const ios = DarwinInitializationSettings(
-      requestAlertPermission: true, // biz manuel isteyeceğiz
+      requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
@@ -41,11 +43,13 @@ class NotificationService {
     final nBody2 = quote2['quote'] ?? 'Okumak güzeldir.';
 
     final now = tz.TZDateTime.now(tz.local);
+
+    // Bugün 20:30 geçtiyse yarından başla, geçmediyse bugün
     var scheduledDate = tz.TZDateTime(
       tz.local,
       now.year,
       now.month,
-      (now.day + 1),
+      now.day + 1,
       20,
       30,
     );
@@ -71,15 +75,13 @@ class NotificationService {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time, // iOS için de önemli
     );
-    scheduledDate.add(Duration(days: 3));
 
     await _notifications.zonedSchedule(
       id: 101,
       title: nTitle2,
       body: nBody2,
-      scheduledDate: scheduledDate,
+      scheduledDate: scheduledDate.add(const Duration(days: 3)),
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'reading_channel',
@@ -94,7 +96,6 @@ class NotificationService {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
