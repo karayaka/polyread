@@ -23,7 +23,10 @@ class MyBooksController extends BaseController {
   SelectModel? selectStatus = SelectModel(key: "", value: "Tümü");
 
   BannerAd? bannerAd;
+  BannerAd? editBannerAd;
   var isBannerLoaded = false.obs;
+  var isEditBannerLoaded = false.obs;
+  InterstitialAd? _interstitialAd;
 
   MyBooksController() {
     db = Get.find();
@@ -33,6 +36,8 @@ class MyBooksController extends BaseController {
   void onInit() {
     initMybooks();
     _loadBannerAd();
+    _loadEditBannerAd();
+    _showInterstitialAd();
     super.onInit();
   }
 
@@ -47,6 +52,23 @@ class MyBooksController extends BaseController {
         },
         onAdFailedToLoad: (ad, err) {
           isBannerLoaded.value = false;
+          ad.dispose();
+        },
+      ),
+    )..load();
+  }
+
+  void _loadEditBannerAd() {
+    editBannerAd = BannerAd(
+      adUnitId: AdService.instance.bannerAdUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          isEditBannerLoaded.value = true;
+        },
+        onAdFailedToLoad: (ad, err) {
+          isEditBannerLoaded.value = false;
           ad.dispose();
         },
       ),
@@ -156,6 +178,29 @@ class MyBooksController extends BaseController {
     );
   }
 
+  void _showInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdService.instance.interstitialAdUnitId,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+            },
+            onAdFailedToShowFullScreenContent: (ad, err) {
+              ad.dispose();
+            },
+          );
+          _interstitialAd = ad;
+        },
+        onAdFailedToLoad: (err) {
+          // ignore
+        },
+      ),
+    );
+  }
+
   Future toReaderPage(LibraryStorageModel book) async {
     var result = await Get.toNamed(
       RouteConst.readerPage,
@@ -165,6 +210,7 @@ class MyBooksController extends BaseController {
         (result.isStreakEarned || result.isTimeEarned)) {
       Get.toNamed(RouteConst.shareSeriesPage, arguments: result);
     }
+    _interstitialAd?.show();
     await getMyBooks();
   }
 

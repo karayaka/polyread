@@ -202,7 +202,7 @@ class MyBooksPage extends GetView<MyBooksController> {
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      SizedBox(width: 4),
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -233,7 +233,7 @@ class MyBooksPage extends GetView<MyBooksController> {
                 ],
               ),
             ),
-            Divider(height: 0),
+            Divider(height: 1),
             // Actions
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -258,7 +258,19 @@ class MyBooksPage extends GetView<MyBooksController> {
                 ],
               ),
             ),
-            SizedBox(height: 8),
+            Obx(() {
+              if (controller.isEditBannerLoaded.value &&
+                  controller.editBannerAd != null) {
+                return SafeArea(
+                  child: SizedBox(
+                    width: controller.editBannerAd!.size.width.toDouble(),
+                    height: controller.editBannerAd!.size.height.toDouble(),
+                    child: AdWidget(ad: controller.editBannerAd!),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            }),
           ],
         ),
       ),
