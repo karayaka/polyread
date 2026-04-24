@@ -13,23 +13,25 @@ class SharePage extends GetView<ShareController> {
       controller.screenshotKey = GlobalKey();
     }
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      appBar: AppBar(
-        title: const Text(
-          "Alıntıyı Paylaş",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade50,
+        appBar: AppBar(
+          title: const Text(
+            "Alıntıyı Paylaş",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
         ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
+        body: Obx(() {
+          if (controller.pageLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return _drawBody(context);
+        }),
       ),
-      body: Obx(() {
-        if (controller.pageLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        return _drawBody(context);
-      }),
     );
   }
 
@@ -46,7 +48,8 @@ class SharePage extends GetView<ShareController> {
                   _buildPreviewContainer(),
                   const SizedBox(height: 16),
                   Obx(() {
-                    if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+                    if (controller.isBannerLoaded.value &&
+                        controller.bannerAd != null) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: SizedBox(

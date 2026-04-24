@@ -42,16 +42,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
       getPages: RoutePages.pages,
       initialRoute: RouteConst.splashScrean,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
-
-//todo sor oluşturmak için ia
-//https://chatgpt.com/c/6985b492-3ad0-832b-98f8-8041391a827c çalışma
-//modeller https://openrouter.ai/models?max_price=0.1
-//kullandığım model https://openrouter.ai/arcee-ai/trinity-large-preview:free/api
-//api llm api key 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
-//todo reader page içindeki çeviri ve diğer özellikler için  reklam eklenecek
-//todo indirme için geçiş reklamı eklenecek
-//todo share ayfasına banner eklenecek
-//todo rozeet paylaşma sayfasına banner eklenebilir

@@ -37,7 +37,7 @@ class MyBooksController extends BaseController {
     initMybooks();
     _loadBannerAd();
     _loadEditBannerAd();
-    _showInterstitialAd();
+
     super.onInit();
   }
 
@@ -202,6 +202,7 @@ class MyBooksController extends BaseController {
   }
 
   Future toReaderPage(LibraryStorageModel book) async {
+    _showInterstitialAd();
     var result = await Get.toNamed(
       RouteConst.readerPage,
       arguments: {"bookId": book.bookId, "bookPath": book.bookPath},

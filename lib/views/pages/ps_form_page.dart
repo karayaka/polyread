@@ -10,31 +10,36 @@ class PsFormPage extends GetView<PsFormController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Add"),
-        actions: [
-          IconButton(onPressed: controller.deletePs, icon: Icon(Icons.delete)),
-        ],
-      ),
-      body: Obx(() {
-        if (controller.formLoading.value) {
-          return Center(child: CircularProgressIndicator());
-        }
-        return _buildForm();
-      }),
-      bottomNavigationBar: Obx(() {
-        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
-          return SafeArea(
-            child: SizedBox(
-              width: controller.bannerAd!.size.width.toDouble(),
-              height: controller.bannerAd!.size.height.toDouble(),
-              child: AdWidget(ad: controller.bannerAd!),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Add"),
+          actions: [
+            IconButton(
+              onPressed: controller.deletePs,
+              icon: Icon(Icons.delete),
             ),
-          );
-        }
-        return const SizedBox.shrink();
-      }),
+          ],
+        ),
+        body: Obx(() {
+          if (controller.formLoading.value) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return _buildForm();
+        }),
+        bottomNavigationBar: Obx(() {
+          if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+            return SafeArea(
+              child: SizedBox(
+                width: controller.bannerAd!.size.width.toDouble(),
+                height: controller.bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: controller.bannerAd!),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+      ),
     );
   }
 

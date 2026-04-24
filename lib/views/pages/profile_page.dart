@@ -9,60 +9,62 @@ class ProfilePage extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Profil",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final minutes = controller.average10DaysMinutes;
-        final streak = controller.maxContinuousStreak;
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildStatsCard(context, minutes, streak),
-              const SizedBox(height: 32),
-              const Text(
-                "Okuma Süresi Rozetleri",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildReadingTimeBadges(minutes),
-              const SizedBox(height: 32),
-              const Text(
-                "Seri Rozetleri",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildStreakBadges(streak),
-              const SizedBox(height: 32),
-            ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            "Profil",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-        );
-      }),
-      bottomNavigationBar: Obx(() {
-        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
-          return SafeArea(
-            child: SizedBox(
-              width: controller.bannerAd!.size.width.toDouble(),
-              height: controller.bannerAd!.size.height.toDouble(),
-              child: AdWidget(ad: controller.bannerAd!),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final minutes = controller.average10DaysMinutes;
+          final streak = controller.maxContinuousStreak;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildStatsCard(context, minutes, streak),
+                const SizedBox(height: 32),
+                const Text(
+                  "Okuma Süresi Rozetleri",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _buildReadingTimeBadges(minutes),
+                const SizedBox(height: 32),
+                const Text(
+                  "Seri Rozetleri",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                _buildStreakBadges(streak),
+                const SizedBox(height: 32),
+              ],
             ),
           );
-        }
-        return const SizedBox.shrink();
-      }),
+        }),
+        bottomNavigationBar: Obx(() {
+          if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+            return SafeArea(
+              child: SizedBox(
+                width: controller.bannerAd!.size.width.toDouble(),
+                height: controller.bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: controller.bannerAd!),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+      ),
     );
   }
 

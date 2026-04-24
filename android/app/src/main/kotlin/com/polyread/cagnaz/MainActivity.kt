@@ -1,4 +1,4 @@
-package com.example.polyread
+package com.polyread.cagnaz
 
 import android.content.Intent
 import android.net.Uri

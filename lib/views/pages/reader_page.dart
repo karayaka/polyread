@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:get/get.dart';
+import 'package:polyread/core/base_components/read_circular_progres_component.dart';
 import 'package:polyread/data/controllers/reader_controller.dart';
 import 'package:polyread/routing/route_fix.dart';
 import 'package:polyread/views/reader_components/chapter_drawer_component.dart';
@@ -67,19 +68,20 @@ class ReaderPage extends GetView<ReaderController> {
                       controller.isSavedLocation.value =
                           controller.lastSavedLocationCfi == value.startCfi;
                     },
-                    onSelection: (
-                      selectedText,
-                      cfiRange,
-                      selectionRect,
-                      viewRect,
-                    ) async {
-                      if (await controller.onSelection(
-                        selectedText,
-                        cfiRange,
-                      )) {
-                        await controller.addPsOrHihglight();
-                      }
-                    },
+                    onSelection:
+                        (
+                          selectedText,
+                          cfiRange,
+                          selectionRect,
+                          viewRect,
+                        ) async {
+                          if (await controller.onSelection(
+                            selectedText,
+                            cfiRange,
+                          )) {
+                            await controller.addPsOrHihglight();
+                          }
+                        },
                     onDeselection: () {
                       controller.selectionRange = null;
                       controller.selectedText = null;
@@ -90,9 +92,7 @@ class ReaderPage extends GetView<ReaderController> {
                           title: "Çevir",
                           id: 1,
                           action: () {
-                            _showVocabularyPanel(
-                              controller.selectedText ?? "",
-                            );
+                            _showVocabularyPanel(controller.selectedText ?? "");
                           },
                         ),
                         ContextMenuItem(
@@ -132,7 +132,11 @@ class ReaderPage extends GetView<ReaderController> {
                   if (!controller.epubReady.value) {
                     return Container(
                       color: Colors.white,
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: ReadCircularProgresComponent(
+                        onRetry: () {
+                          controller.loadBook();
+                        },
+                      ),
                     );
                   }
                   return const SizedBox.shrink();

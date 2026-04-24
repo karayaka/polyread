@@ -15,7 +15,7 @@ class AdService {
 
   String get bannerAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111'; // Test ID
+      return 'ca-app-pub-1229600046040111/6674167281'; // Test ID
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/2934735716'; // Test ID
     }
@@ -24,7 +24,7 @@ class AdService {
 
   String get interstitialAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/1033173712'; // Test ID
+      return 'ca-app-pub-1229600046040111/6892152536'; // Test ID
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/4411468910'; // Test ID
     }

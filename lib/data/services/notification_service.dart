@@ -32,77 +32,58 @@ class NotificationService {
   }
 
   Future<void> scheduleDailyReminder() async {
+    await cancelDailyReminder();
     final random = Random();
-    final quote1 = AppWords.quotes[random.nextInt(AppWords.quotes.length)];
-    final quote2 = AppWords.quotes[random.nextInt(AppWords.quotes.length)];
-
-    final nTitle1 = quote1['author'] ?? 'Günün Sözü';
-    final nBody1 = quote1['quote'] ?? 'Okumak güzeldir.';
-
-    final nTitle2 = quote2['author'] ?? 'Günün Sözü';
-    final nBody2 = quote2['quote'] ?? 'Okumak güzeldir.';
-
     final now = tz.TZDateTime.now(tz.local);
 
-    // Bugün 20:30 geçtiyse yarından başla, geçmediyse bugün
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day + 1,
-      20,
-      30,
-    );
+    // Uygulamaya her girildiğinde, önümüzdeki 15 gün için (her güne farklı söz) baştan kuruyoruz.
+    for (int i = 1; i < 17; i += 3) {
+      final quote = AppWords.quotes[random.nextInt(AppWords.quotes.length)];
+      final nTitle = quote['author'] ?? 'Günün Sözü';
+      final nBody = quote['quote'] ?? 'Okumak güzeldir.';
 
-    await cancelDailyReminder();
+      var scheduledDate = tz.TZDateTime(
+        tz.local,
+        now.year,
+        now.month,
+        now.day + i, // i=0 bugün, i=1 yarın ...
+        20,
+        00,
+      );
 
-    await _notifications.zonedSchedule(
-      id: 100,
-      title: nTitle1,
-      body: nBody1,
-      scheduledDate: scheduledDate,
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'reading_channel',
-          'Reading Reminder',
-          importance: Importance.high,
-          priority: Priority.high,
-        ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-    );
+      // Eğer i=0 (bugün) için saat 20:00 çoktan geçtiyse, geçmişe kurmamak için atlıyoruz
+      if (scheduledDate.isBefore(now)) {
+        continue;
+      }
 
-    await _notifications.zonedSchedule(
-      id: 101,
-      title: nTitle2,
-      body: nBody2,
-      scheduledDate: scheduledDate.add(const Duration(days: 3)),
-      notificationDetails: const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'reading_channel',
-          'Reading Reminder',
-          importance: Importance.high,
-          priority: Priority.high,
+      await _notifications.zonedSchedule(
+        id: 100 + i, // Her gün için farklı bir ID (100, 101, 102...)
+        title: nTitle,
+        body: nBody,
+        scheduledDate: scheduledDate,
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'reading_channel',
+            'Reading Reminder',
+            importance: Importance.high,
+            priority: Priority.high,
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
         ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-    );
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      );
+    }
   }
 
-  // Notification iptal
+  // Notification iptal (15 günlük döngü kurulduğu için hepsini siliyoruz)
   Future<void> cancelDailyReminder() async {
-    await _notifications.cancel(id: 100);
-    await _notifications.cancel(id: 101);
+    for (int i = 0; i < 15; i++) {
+      await _notifications.cancel(id: 100 + i);
+    }
   }
 
   Future<void> requestAndroidPermission() async {

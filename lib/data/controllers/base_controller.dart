@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:polyread/core/app_tools/project_const.dart';
 import 'package:polyread/models/base_models/base_result.dart';
-import 'package:polyread/models/service_models/external_book_service_model.dart';
 
 class BaseController extends GetxController {
   int guardStatus = 0;
