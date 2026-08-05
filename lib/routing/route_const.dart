@@ -8,4 +8,6 @@ class RouteConst {
   static const sharePage = "/sharePage";
   static const profilePage = "/profilePage";
   static const shareSeriesPage = "/shareSeriesPage";
+  static const psListPage = "/psListPage";
+  static const appViewPage = "/appViewPage";
 }

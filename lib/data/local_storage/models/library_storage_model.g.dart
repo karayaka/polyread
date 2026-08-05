@@ -187,7 +187,7 @@ const LibraryStorageModelSchema = CollectionSchema(
   getId: _libraryStorageModelGetId,
   getLinks: _libraryStorageModelGetLinks,
   attach: _libraryStorageModelAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _libraryStorageModelEstimateSize(

@@ -8,11 +8,13 @@ import 'package:polyread/data/bindings/reader_binding.dart';
 import 'package:polyread/data/bindings/share_binding.dart';
 import 'package:polyread/data/bindings/share_series_binding.dart';
 import 'package:polyread/routing/route_const.dart';
+import 'package:polyread/views/pages/app_view_page.dart';
 import 'package:polyread/views/pages/edit_meta_data_page.dart';
 import 'package:polyread/views/pages/library_detail_page.dart';
 import 'package:polyread/views/pages/home_page.dart';
 import 'package:polyread/views/pages/profile_page.dart';
 import 'package:polyread/views/pages/ps_form_page.dart';
+import 'package:polyread/views/pages/ps_list_page.dart';
 import 'package:polyread/views/pages/reader_page.dart';
 import 'package:polyread/views/pages/share_page.dart';
 import 'package:polyread/views/pages/share_series_page.dart';
@@ -60,5 +62,11 @@ class RoutePages {
       binding: ShareSeriesBinding(),
       fullscreenDialog: true,
     ),
+    GetPage(
+      name: RouteConst.psListPage,
+      page: () => PsListPage(),
+      fullscreenDialog: true,
+    ),
+    GetPage(name: RouteConst.appViewPage, page: () => AppViewPage()),
   ];
 }

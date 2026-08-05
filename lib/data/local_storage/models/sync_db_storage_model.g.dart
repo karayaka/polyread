@@ -69,7 +69,7 @@ const SyncDbStorageModelSchema = CollectionSchema(
   getId: _syncDbStorageModelGetId,
   getLinks: _syncDbStorageModelGetLinks,
   attach: _syncDbStorageModelAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _syncDbStorageModelEstimateSize(

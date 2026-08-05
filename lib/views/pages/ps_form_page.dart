@@ -13,11 +13,19 @@ class PsFormPage extends GetView<PsFormController> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Add"),
+          title: Obx(
+            () =>
+                Text(controller.isEditMode.value ? "Notu Düzenle" : "Not Ekle"),
+          ),
           actions: [
-            IconButton(
-              onPressed: controller.deletePs,
-              icon: Icon(Icons.delete),
+            Obx(
+              () => Visibility(
+                visible: controller.isEditMode.value,
+                child: IconButton(
+                  onPressed: controller.deletePs,
+                  icon: Icon(Icons.delete),
+                ),
+              ),
             ),
           ],
         ),

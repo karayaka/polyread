@@ -9,7 +9,8 @@ import 'package:polyread/views/pages/library_page.dart';
 import 'package:polyread/views/pages/my_books_page.dart';
 import 'package:polyread/views/pages/vocabulary_history_page.dart';
 import 'package:flutter_in_store_app_version_checker/flutter_in_store_app_version_checker.dart';
-import 'package:store_redirect/store_redirect.dart';
+import 'package:in_app_update/in_app_update.dart';
+import 'package:store_redirect2/store_redirect2.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,15 +32,10 @@ class _HomePageState extends State<HomePage> {
   void _checkAppVersion() async {
     try {
       if (Platform.isAndroid) {
-        const params = InStoreAppVersionCheckerParams(
-          locale: 'tr',
-          androidStore: InStoreAppVersionCheckerAndroidStoreType.apkPure,
-        );
-        var val = await InStoreAppVersionChecker.instance.checkUpdate(params);
-        if (val.canUpdate) {
-          if (mounted) {
-            _showUpdateDialog(val.currentVersion, val.newVersion);
-          }
+        final info = await InAppUpdate.checkForUpdate();
+        if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+          await InAppUpdate.startFlexibleUpdate();
+          await InAppUpdate.completeFlexibleUpdate();
         }
       } else {
         const params = InStoreAppVersionCheckerParams(locale: 'tr');
@@ -132,21 +128,23 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return PersistentTabView(
-      onItemSelected: (index) {
-        if (index == 2) {
-          Get.find<VocabularyHistoryController>().loadVocabularyHistory();
-        }
-      },
-      context,
-      controller: _controller,
-      screens: _buildScreens(),
-      items: _navBarsItems(),
-      backgroundColor: Colors.white,
-      handleAndroidBackButtonPress: true,
-      resizeToAvoidBottomInset: true,
-      stateManagement: true,
-      navBarStyle: NavBarStyle.style14,
+    return SafeArea(
+      child: PersistentTabView(
+        onItemSelected: (index) {
+          if (index == 2) {
+            Get.find<VocabularyHistoryController>().loadVocabularyHistory();
+          }
+        },
+        context,
+        controller: _controller,
+        screens: _buildScreens(),
+        items: _navBarsItems(),
+        backgroundColor: Colors.white,
+        handleAndroidBackButtonPress: true,
+        resizeToAvoidBottomInset: true,
+        stateManagement: true,
+        navBarStyle: NavBarStyle.style14,
+      ),
     );
   }
 }

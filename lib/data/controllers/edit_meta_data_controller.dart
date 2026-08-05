@@ -115,7 +115,7 @@ class EditMetaDataController extends BaseController {
   }
 
   Future<void> pickCoverImage() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
+    FilePickerResult? result = await FilePicker.pickFiles(
       type: FileType.image,
       allowMultiple: false,
     );

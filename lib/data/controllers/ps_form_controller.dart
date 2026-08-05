@@ -18,6 +18,7 @@ class PsFormController extends BaseController {
   late StringTagController tagController;
   var isUnderline = false.obs;
   var selectedColorHex = 4294967295.obs;
+  var isEditMode = false.obs;
 
   BannerAd? bannerAd;
   var isBannerLoaded = false.obs;
@@ -28,7 +29,7 @@ class PsFormController extends BaseController {
     _pageModel = PsPageModel.fromMap(Get.arguments); //todo
     tagController = StringTagController();
     _loadBannerAd();
-    loadPsForm();
+    _loadPsForm();
     super.onInit();
   }
 
@@ -55,7 +56,7 @@ class PsFormController extends BaseController {
     super.onClose();
   }
 
-  Future loadPsForm() async {
+  Future _loadPsForm() async {
     try {
       formLoading.value = true;
       if (_pageModel.psCfi != null) {
@@ -65,6 +66,7 @@ class PsFormController extends BaseController {
           psFormModel?.id = ps.id;
           selectedColorHex.value = psFormModel?.colorHex ?? 4294967295;
           isUnderline.value = psFormModel?.underline ?? false;
+          isEditMode.value = true;
         }
       }
       psFormModel ??= _pageModel.toDtoModel();

@@ -79,7 +79,7 @@ const ReadingSeriesModelSchema = CollectionSchema(
   getId: _readingSeriesModelGetId,
   getLinks: _readingSeriesModelGetLinks,
   attach: _readingSeriesModelAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _readingSeriesModelEstimateSize(

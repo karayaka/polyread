@@ -165,7 +165,7 @@ const VocabularyStorageModelSchema = CollectionSchema(
   getId: _vocabularyStorageModelGetId,
   getLinks: _vocabularyStorageModelGetLinks,
   attach: _vocabularyStorageModelAttach,
-  version: '3.3.0',
+  version: '3.3.2',
 );
 
 int _vocabularyStorageModelEstimateSize(

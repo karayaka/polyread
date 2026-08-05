@@ -94,7 +94,7 @@ class MyBooksController extends BaseController {
 
   Future<bool> addBook() async {
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      FilePickerResult? result = await FilePicker.pickFiles(
         allowMultiple: false,
         type: FileType.custom,
         allowedExtensions: ['epub'],
