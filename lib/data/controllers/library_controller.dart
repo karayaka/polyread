@@ -131,7 +131,6 @@ class LibraryController extends BaseController {
         },
         onAdFailedToLoad: (error) {
           downloadInterstitialAd = null;
-          print('Download InterstitialAd failed to load: $error');
         },
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:get/get.dart';
@@ -37,15 +39,17 @@ class ReaderPage extends GetView<ReaderController> {
             drawer: ChapterDrawerComponent(),
             body: Stack(
               children: [
-                // EpubViewer her zaman ağaçta kalır, unmount olmaz
+                // EpubViewer her zaman ağaçta kabi alır, unmount olmaz
                 Obx(() {
                   if (controller.bookLoading.value) {
                     return const SizedBox.shrink();
                   }
                   return EpubViewer(
-                    key: ValueKey('epub_${controller.bookFile.path}'),
+                    key: ValueKey('epub_${controller.bookPath}'),
                     initialCfi: controller.bookFromDb?.lastLocationCfi,
-                    epubSource: EpubSource.fromFile(controller.bookFile),
+                    epubSource: EpubSource.fromData(
+                      File(controller.bookPath ?? "").readAsBytesSync(),
+                    ),
                     epubController: controller.epubController,
                     selectAnnotationRange: true,
                     displaySettings: EpubDisplaySettings(
@@ -86,23 +90,24 @@ class ReaderPage extends GetView<ReaderController> {
                       controller.selectionRange = null;
                       controller.selectedText = null;
                     },
-                    selectionContextMenu: ContextMenu(
-                      menuItems: [
-                        ContextMenuItem(
+                    selectionContextMenu: EpubContextMenu(
+                      hideDefaultSystemItems: true,
+                      items: [
+                        EpubContextMenuItem(
                           title: "Çevir",
                           id: 1,
                           action: () {
                             _showVocabularyPanel(controller.selectedText ?? "");
                           },
                         ),
-                        ContextMenuItem(
+                        EpubContextMenuItem(
                           title: "Not/Vurgula",
                           id: 2,
                           action: () async {
                             await controller.addPsOrHihglight();
                           },
                         ),
-                        ContextMenuItem(
+                        EpubContextMenuItem(
                           title: "Paylaş",
                           id: 3,
                           action: () async {
@@ -113,9 +118,6 @@ class ReaderPage extends GetView<ReaderController> {
                           },
                         ),
                       ],
-                      settings: ContextMenuSettings(
-                        hideDefaultSystemContextMenuItems: true,
-                      ),
                     ),
                     onTouchUp: (x, y) async {
                       controller.showbottomBar.value =
@@ -141,7 +143,6 @@ class ReaderPage extends GetView<ReaderController> {
                   }
                   return const SizedBox.shrink();
                 }),
-
                 Obx(() {
                   if (controller.showbottomBar.value) {
                     return Positioned(

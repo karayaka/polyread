@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:get/get.dart';
 import 'package:polyread/core/enums/page_event_type.dart';
 import 'package:polyread/data/controllers/base_controller.dart';
-import 'package:polyread/data/controllers/my_books_controller.dart';
 import 'package:polyread/data/local_storage/models/external_book_storage_model.dart';
 import 'package:polyread/data/local_storage/models/library_storage_model.dart';
-import 'package:polyread/data/local_storage/models/reading_series_model.dart';
 import 'package:polyread/data/repositories/external_book_repository.dart';
 import 'package:polyread/data/repositories/library_repository.dart';
 import 'package:polyread/data/repositories/ps_repository.dart';
@@ -30,6 +29,7 @@ class ReaderController extends BaseController {
   //initials var
   String? bookId;
   String? bookPath;
+  Uint8List? bookData;
   String? bookName;
   String? selectedText;
   String? selectionRange;
@@ -40,7 +40,6 @@ class ReaderController extends BaseController {
   late SeriesCalculate currentSeries;
   var earnSeries = EarnSeriesModel();
   //initial Models
-  late File bookFile;
   late GlobalKey<ScaffoldState> scaffoldKey;
   late EpubController epubController;
   LibraryStorageModel? bookFromDb;
@@ -130,7 +129,6 @@ class ReaderController extends BaseController {
     try {
       firstLoad = true;
       bookLoading.value = true;
-      bookFile = File(bookPath!);
       if (bookId != null) {
         bookFromDb = await _libraryRepository.getByBookId(bookId!);
         pagePsModels = (await _psRepository.getPsByBookId(

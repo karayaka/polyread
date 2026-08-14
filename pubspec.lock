@@ -347,10 +347,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_epub_viewer
-      sha256: "39d8ff469700fea41f103ae1ec01e06c805c3602eef0fecb1c5b325688dcb5b2"
+      sha256: "3be7db491794e4cb6d90c6e28db0673fb3f632562d71f386a9268907b2daf2e8"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.8"
+    version: "2.0.0"
   flutter_in_store_app_version_checker:
     dependency: "direct main"
     description:

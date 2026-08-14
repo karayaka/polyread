@@ -124,14 +124,14 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
                                     await controller.epubController.display(
                                       cfi: ch.href,
                                     );
-                                    Navigator.pop(context);
+                                    Get.back();
                                   } catch (e) {
                                     // fallback: try to parse as location if API differs
                                     try {
                                       controller.epubController.display(
                                         cfi: controller.chapters[index].href,
                                       );
-                                      Navigator.pop(context);
+                                      Get.back();
                                     } catch (_) {
                                       Get.snackbar('Hata', 'Bölüme gidilemedi');
                                     }
@@ -143,13 +143,13 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
                                   await controller.epubController.display(
                                     cfi: ch.href,
                                   );
-                                  Navigator.pop(context);
+                                  Get.back();
                                 } catch (e) {
                                   try {
                                     controller.epubController.display(
                                       cfi: controller.chapters[index].href,
                                     );
-                                    Navigator.pop(context);
+                                    Get.back();
                                   } catch (_) {
                                     Get.snackbar('Hata', 'Bölüme gidilemedi');
                                   }
