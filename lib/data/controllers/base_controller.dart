@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:path/path.dart';
 import 'package:polyread/models/base_models/base_result.dart';
 
 class BaseController extends GetxController {
@@ -72,5 +73,11 @@ class BaseController extends GetxController {
     }
   }
 
-  //kitap kaydedilmişse font size kaydet
+  String getDeviceLanguageCode() {
+    final box = GetStorage();
+    final savedLocale = box.read('app_locale');
+    final initialLocale =
+        savedLocale ?? Get.deviceLocale?.toString().split("-")[0] ?? 'tr';
+    return initialLocale;
+  }
 }

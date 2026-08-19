@@ -101,7 +101,7 @@ class VocabularyController extends BaseController {
         await HttpService.instance!.post<VocabularyModel>(
           "https://tr.cagnaz.com/Translate/",
           VocabularyModel(),
-          {"text": word, "to": "tr"},
+          {"text": word, "to": getDeviceLanguageCode()},
         ),
       );
       if (Tools.languges.any((l) => l.key == data?.detectedLanguage)) {
@@ -116,7 +116,8 @@ class VocabularyController extends BaseController {
             ..bookId = bookId
             ..sourceWord = word
             ..text = data?.translation ?? ""
-            ..languageCode = data?.detectedLanguage ?? ""
+            ..toLanguage = data?.detectedLanguage ?? ""
+            ..languageCode = getDeviceLanguageCode()
             ..desc = "",
         );
       } else {

@@ -22,5 +22,7 @@ class LibraryStorageModel {
   @Index(type: IndexType.value)
   late int progres;
   @Index(type: IndexType.value)
+  List<String>? tags;
+  @Index(type: IndexType.value)
   late DateTime lastUpdate = DateTime.now();
 }

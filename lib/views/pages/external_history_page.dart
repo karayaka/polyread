@@ -15,9 +15,9 @@ class ExternalHistoryPage extends GetView<ExternalHistoryController> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: false,
-        title: const Text(
-          "Son Açılanlar",
-          style: TextStyle(fontWeight: FontWeight.w600),
+        title: Text(
+          "recently_opened".tr,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       body: Obx(() {
@@ -34,7 +34,7 @@ class ExternalHistoryPage extends GetView<ExternalHistoryController> {
                 Icon(Icons.history, size: 64, color: Colors.grey.shade300),
                 const SizedBox(height: 12),
                 Text(
-                  "Henüz bir kitap açılmadı",
+                  "no_books_opened".tr,
                   style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
                 ),
               ],
@@ -83,7 +83,7 @@ class ExternalHistoryPage extends GetView<ExternalHistoryController> {
                   ),
                 ),
                 title: Text(
-                  item.name ?? 'İsim yok',
+                  item.name ?? "no_name".tr,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontWeight: FontWeight.w600),

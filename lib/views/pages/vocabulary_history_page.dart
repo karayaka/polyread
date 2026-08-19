@@ -14,7 +14,7 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Kelime Geçmişi")),
+      appBar: AppBar(title: Text("vocabulary_history".tr)),
       body: Column(
         children: [
           _buildAdBanner(),
@@ -27,8 +27,8 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
               final grouped = controller.groupedVocabulary;
 
               if (grouped.isEmpty) {
-                return const Center(
-                  child: Text("Henüz kaydedilmiş kelime bulunmuyor."),
+                return Center(
+                  child: Text("no_saved_words".tr),
                 );
               }
 
@@ -90,7 +90,7 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
             child: TextButton.icon(
               onPressed: () => controller.isPromoVisible.value = true,
               icon: const Icon(Icons.star_border, size: 20),
-              label: const Text("Önerilen Uygulamayı Göster"),
+              label: Text("show_recommended_app".tr),
               style: TextButton.styleFrom(
                 foregroundColor: Get.theme.primaryColor,
               ),
@@ -152,9 +152,9 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  "İngilizce Sorular",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                Text(
+                  "recommended_app_title".tr,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: onTap,
@@ -165,7 +165,7 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
                     alignment: Alignment.centerLeft,
                   ),
                   child: Text(
-                    "Kelime testleri için indirin!",
+                    "recommended_app_desc".tr,
                     style: TextStyle(
                       fontSize: 13,
                       color: Get.theme.primaryColor,
@@ -181,7 +181,7 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
             icon: const Icon(Icons.close, size: 20, color: Colors.grey),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            tooltip: "Gizle",
+            tooltip: "hide".tr,
           ),
         ],
       ),
@@ -190,8 +190,8 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
 
   Widget _buildListView(List<VocabularyStorageModel> list) {
     if (list.isEmpty) {
-      return const Center(
-        child: Text("Bu dilde kaydedilmiş kelime bulunmuyor."),
+      return Center(
+        child: Text("no_words_in_language".tr),
       );
     }
     return ListView.separated(
@@ -230,7 +230,7 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
                   }
                   return IconButton(
                     icon: const Icon(Icons.volume_down),
-                    tooltip: 'Yavaş Oku',
+                    tooltip: 'read_slowly'.tr,
                     onPressed: () {
                       controller.speak(item.sourceWord, item.languageCode, 1);
                     },
@@ -238,14 +238,14 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
                 }),
                 Obx(() {
                   if (controller.isSpeaking.value) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: const CircularProgressIndicator(),
+                    return const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(),
                     );
                   }
                   return IconButton(
                     icon: const Icon(Icons.volume_up),
-                    tooltip: 'Normal Oku',
+                    tooltip: 'read_normally'.tr,
                     onPressed: () {
                       controller.speak(item.sourceWord, item.languageCode, 2);
                     },
@@ -254,7 +254,7 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
                 IconButton(
                   icon: const Icon(Icons.check_circle_outline),
                   color: Colors.green,
-                  tooltip: 'Öğrendim',
+                  tooltip: 'learned'.tr,
                   onPressed: () {
                     controller.toggleLearnStatus(item.id, true);
                   },

@@ -55,23 +55,24 @@ class _HomePageState extends State<HomePage> {
     Get.dialog(
       barrierDismissible: true, // Kullanıcı boşluğa tıklayarak kapatabilir.
       AlertDialog(
-        title: const Text("Yeni Güncelleme Mevcut!"),
+        title: Text("update_available_title".tr),
         content: Text(
-          "Uygulamanın yeni bir sürümü yayınlandı.\nDaha iyi bir deneyim için lütfen uygulamayı güncelleyin.\n\n"
-          "Mevcut Sürüm: ${currentVersion ?? ''}\n"
-          "Yeni Sürüm: ${newVersion ?? ''}",
+          "update_available_body".trParams({
+            'current': currentVersion ?? '',
+            'new': newVersion ?? '',
+          }),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text("Daha Sonra"),
+            child: Text("later".tr),
           ),
           ElevatedButton(
             onPressed: () {
               StoreRedirect.redirect(); // Uygulamanın kendi App ID'sini otomatik algılayıp mağazayı açar.
               Get.back();
             },
-            child: const Text("Güncelle"),
+            child: Text("update".tr),
           ),
         ],
       ),
@@ -95,19 +96,19 @@ class _HomePageState extends State<HomePage> {
     var bars = [
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.bookmark),
-        title: 'Kitaplık',
+        title: 'library'.tr,
         activeColorPrimary: Get.theme.primaryColor,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.book_online),
-        title: 'Kitaplarım',
+        title: 'my_books'.tr,
         activeColorPrimary: Get.theme.primaryColor,
         inactiveColorPrimary: Colors.grey,
       ),
       PersistentBottomNavBarItem(
         icon: const Icon(Icons.wordpress),
-        title: 'Kelimelerim',
+        title: 'my_words'.tr,
         activeColorPrimary: Get.theme.primaryColor,
         inactiveColorPrimary: Colors.grey,
       ),
@@ -116,7 +117,7 @@ class _HomePageState extends State<HomePage> {
       bars.add(
         PersistentBottomNavBarItem(
           icon: const Icon(Icons.history),
-          title: 'Son Açılanlar',
+          title: 'recently_opened'.tr,
           activeColorPrimary: Get.theme.primaryColor,
           inactiveColorPrimary: Colors.grey,
         ),

@@ -17,9 +17,9 @@ class SharePage extends GetView<ShareController> {
       child: Scaffold(
         backgroundColor: Colors.grey.shade50,
         appBar: AppBar(
-          title: const Text(
-            "Alıntıyı Paylaş",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          title: Text(
+            "share_quote".tr,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -82,7 +82,7 @@ class SharePage extends GetView<ShareController> {
           ),
           child: SafeArea(
             child: _buildShareButton(
-              label: "Paylaş",
+              label: "share".tr,
               icon: Icons.share_rounded,
               color: Theme.of(context).primaryColor,
               onTap: () => controller.captureAndShare("other"),
@@ -119,12 +119,12 @@ class SharePage extends GetView<ShareController> {
                 unselectedLabelColor: Colors.grey.shade500,
                 indicatorColor: Theme.of(context).primaryColor,
                 indicatorWeight: 3,
-                tabs: const [
-                  Tab(icon: Icon(Icons.format_paint, size: 16), text: "BİÇİM"),
-                  Tab(icon: Icon(Icons.text_format, size: 16), text: "METİN"),
+                tabs: [
+                  Tab(icon: const Icon(Icons.format_paint, size: 16), text: "format_uppercase".tr),
+                  Tab(icon: const Icon(Icons.text_format, size: 16), text: "text_uppercase".tr),
                   Tab(
-                    icon: Icon(Icons.color_lens, size: 16),
-                    text: "ARKA PLAN",
+                    icon: const Icon(Icons.color_lens, size: 16),
+                    text: "background_uppercase".tr,
                   ),
                 ],
               ),
@@ -144,7 +144,7 @@ class SharePage extends GetView<ShareController> {
                             Expanded(
                               child: _buildToggleButton(
                                 icon: Icons.format_bold,
-                                label: "Kalın",
+                                label: "bold".tr,
                                 isActive: controller.isBold,
                                 onTap: () => controller.toggleBold(),
                               ),
@@ -153,7 +153,7 @@ class SharePage extends GetView<ShareController> {
                             Expanded(
                               child: _buildToggleButton(
                                 icon: Icons.format_underlined,
-                                label: "Alt Çizgi",
+                                label: "underline_option".tr,
                                 isActive: controller.isUnderline,
                                 onTap: () => controller.toggleUnderline(),
                               ),
@@ -170,12 +170,12 @@ class SharePage extends GetView<ShareController> {
                   // Text Color
                   Padding(
                     padding: const EdgeInsets.all(20.0),
-                    child: _buildColorPicker("Metin Rengini Seçin", true),
+                    child: _buildColorPicker("select_text_color".tr, true),
                   ),
                   // Background Color
                   Padding(
                     padding: const EdgeInsets.all(20.0),
-                    child: _buildColorPicker("Kart Rengini Seçin", false),
+                    child: _buildColorPicker("select_card_color".tr, false),
                   ),
                 ],
               ),

@@ -15,7 +15,7 @@ class PsFormPage extends GetView<PsFormController> {
         appBar: AppBar(
           title: Obx(
             () =>
-                Text(controller.isEditMode.value ? "Notu Düzenle" : "Not Ekle"),
+                Text(controller.isEditMode.value ? "edit_note".tr : "add_note".tr),
           ),
           actions: [
             Obx(
@@ -77,7 +77,7 @@ class PsFormPage extends GetView<PsFormController> {
 
           /// 🔹 Not Alanı
           Text(
-            "Not",
+            "note".tr,
             style: Get.textTheme.titleMedium!.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -89,7 +89,7 @@ class PsFormPage extends GetView<PsFormController> {
             maxLines: 8,
             initialValue: controller.psFormModel?.ps ?? "",
             decoration: InputDecoration(
-              hintText: "Notunuzu yazın...",
+              hintText: "note_write_here".tr,
               filled: true,
               fillColor: Colors.grey.shade50,
               contentPadding: const EdgeInsets.all(14),
@@ -109,7 +109,7 @@ class PsFormPage extends GetView<PsFormController> {
           ),
           const SizedBox(height: 4),
           Text(
-            "Renk",
+            "color".tr,
             style: Get.textTheme.titleMedium!.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -132,7 +132,7 @@ class PsFormPage extends GetView<PsFormController> {
           ),
           const SizedBox(height: 8),
           Text(
-            "Etiketler",
+            "tags".tr,
             style: Get.textTheme.titleMedium!.copyWith(
               fontWeight: FontWeight.w600,
             ),
@@ -146,7 +146,7 @@ class PsFormPage extends GetView<PsFormController> {
           const SizedBox(height: 4),
           Obx(
             () => SwitchListTile(
-              title: const Text("Alt Çizgi"),
+              title: Text("underline".tr),
               value: controller.isUnderline.value,
               activeThumbColor: Get.theme.primaryColor,
               shape: RoundedRectangleBorder(
@@ -174,9 +174,9 @@ class PsFormPage extends GetView<PsFormController> {
                 onPressed: () async {
                   await controller.savePs();
                 },
-                child: const Text(
-                  "Kaydet",
-                  style: TextStyle(
+                child: Text(
+                  "save".tr,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

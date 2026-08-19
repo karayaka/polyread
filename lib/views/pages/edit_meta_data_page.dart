@@ -46,7 +46,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                       vertical: 8,
                     ),
                     title: Text(
-                      controller.formModel?.title ?? "Kitap Düzenle",
+                      controller.formModel?.title ?? "edit_book".tr,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 16),
@@ -61,13 +61,13 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                             ? CustomFileImageComponent(
                                 path: controller.getBookCoverPath(),
                               )
-                            : const Center(
+                            : Center(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.image_outlined, size: 64),
                                     SizedBox(height: 8),
-                                    Text("Kapak Seçmek için Tıkla"),
+                                    Text("click_to_select_cover".tr),
                                   ],
                                 ),
                               ),
@@ -85,7 +85,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                         children: [
                           // Kitap Adı
                           Text(
-                            "Kitap Adı",
+                            "book_title".tr,
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
@@ -93,7 +93,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                           TextFormField(
                             initialValue: controller.formModel?.title ?? "",
                             decoration: InputDecoration(
-                              hintText: "Kitap adını girin",
+                              hintText: "enter_book_title".tr,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -102,7 +102,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                                 controller.formModel?.title = value,
                             validator: (value) {
                               if (value?.isEmpty ?? true) {
-                                return "Kitap adı boş olamaz";
+                                return "book_title_required".tr;
                               }
                               return null;
                             },
@@ -113,7 +113,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
 
                           // Yazarlar
                           Text(
-                            "Yazarlar",
+                            "authors".tr,
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
@@ -150,7 +150,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                                   onSubmitted: (value) => controller.addAutor(),
                                   controller: controller.autorController,
                                   decoration: InputDecoration(
-                                    hintText: "Yeni yazar ekle",
+                                    hintText: "add_new_author".tr,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -162,7 +162,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                                   child: OutlinedButton.icon(
                                     onPressed: controller.addAutor,
                                     icon: const Icon(Icons.add),
-                                    label: const Text("Yazar Ekle"),
+                                    label: Text("add_author".tr),
                                   ),
                                 ),
                               ],
@@ -174,7 +174,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
 
                           // Dil Seçimi
                           Text(
-                            "Dil",
+                            "language".tr,
                             style: Theme.of(context).textTheme.bodyMedium
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
@@ -221,7 +221,7 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                                               strokeWidth: 2,
                                             ),
                                           )
-                                        : const Text("Kaydet"),
+                                        : Text("save".tr),
                                   );
                                 }),
                               ),

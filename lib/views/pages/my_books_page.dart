@@ -20,9 +20,9 @@ class MyBooksPage extends GetView<MyBooksController> {
       appBar: AppBar(
         elevation: 0,
         centerTitle: false,
-        title: const Text(
-          "Kitaplarım",
-          style: TextStyle(fontWeight: FontWeight.w600),
+        title: Text(
+          "my_books".tr,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
@@ -57,7 +57,7 @@ class MyBooksPage extends GetView<MyBooksController> {
         return FloatingActionButton.extended(
           onPressed: controller.addBook,
           icon: const Icon(Icons.add),
-          label: const Text("Kitap Ekle"),
+          label: Text("add_book".tr),
         );
       }),
       bottomNavigationBar: Obx(() {
@@ -241,13 +241,13 @@ class MyBooksPage extends GetView<MyBooksController> {
                   children: [
                     ListTile(
                       leading: Icon(Icons.edit, color: Colors.blue.shade600),
-                      title: Text('Düzenle'),
+                      title: Text('edit'.tr),
                       onTap: () => controller.toEditMetaDataPage(book.id),
                     ),
                     ListTile(
                       leading: Icon(Icons.delete, color: Colors.red.shade600),
                       title: Text(
-                        'Sil',
+                        'delete'.tr,
                         style: TextStyle(color: Colors.red.shade600),
                       ),
                       onTap: () {

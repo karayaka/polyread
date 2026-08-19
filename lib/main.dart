@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:polyread/core/localization/translations.dart';
 import 'package:polyread/data/services/external_book_service.dart';
 import 'package:polyread/data/services/notification_service.dart';
 import 'package:polyread/routing/route_const.dart';
@@ -37,12 +38,23 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
+    final box = GetStorage();
+    final savedLocale = box.read('app_locale');
+    final initialLocale = savedLocale != null
+        ? Locale(savedLocale)
+        : Get.deviceLocale ?? const Locale('tr');
+
     return GetMaterialApp(
       title: 'PolyRead',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
       getPages: RoutePages.pages,
       initialRoute: RouteConst.splashScrean,
       debugShowCheckedModeBanner: false,
+      translations: AppTranslations(),
+      locale: initialLocale,
+      fallbackLocale: const Locale('tr'),
     );
   }
 }

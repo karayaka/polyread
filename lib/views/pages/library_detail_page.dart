@@ -17,8 +17,8 @@ class LibraryDetailPage extends GetView<LibraryController> {
     if (book == null) {
       return SafeArea(
         child: Scaffold(
-          appBar: AppBar(title: const Text('Kitap')),
-          body: const Center(child: Text('Seçili kitap bulunamadı')),
+          appBar: AppBar(title: Text('book'.tr)),
+          body: Center(child: Text('book_not_found'.tr)),
         ),
       );
     }
@@ -70,7 +70,7 @@ class LibraryDetailPage extends GetView<LibraryController> {
                       mainAxisAlignment: .spaceBetween,
                       children: [
                         Chip(
-                          label: Text('${book.downloadCount ?? 0} İndirilen'),
+                          label: Text('downloaded_count'.trParams({'count': '${book.downloadCount ?? 0}'})),
                           backgroundColor: Theme.of(
                             context,
                           ).chipTheme.backgroundColor,
@@ -87,7 +87,7 @@ class LibraryDetailPage extends GetView<LibraryController> {
                                 controller.toReaderPage();
                               },
                               icon: const Icon(Icons.book_outlined),
-                              label: const Text('Oku'),
+                              label: Text('read'.tr),
                             );
                           } else {
                             return OutlinedButton.icon(
@@ -98,7 +98,7 @@ class LibraryDetailPage extends GetView<LibraryController> {
                                 );
                               },
                               icon: const Icon(Icons.download_outlined),
-                              label: const Text('İndir'),
+                              label: Text('download'.tr),
                             );
                           }
                         }),
@@ -109,7 +109,7 @@ class LibraryDetailPage extends GetView<LibraryController> {
                     const Divider(),
                     const SizedBox(height: 8),
 
-                    Text('Özet', style: Theme.of(context).textTheme.bodySmall),
+                    Text('summary'.tr, style: Theme.of(context).textTheme.bodySmall),
                     const SizedBox(height: 8),
                     Text(
                       book.summaries ?? "",

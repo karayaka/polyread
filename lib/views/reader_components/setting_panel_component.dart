@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:polyread/data/controllers/reader_controller.dart';
@@ -60,8 +61,11 @@ class SettingPanelComponent extends GetView<ReaderController> {
                     ],
                   ),
                   Text(
-                    'Ayarlar',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    'settings'.tr,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -72,7 +76,7 @@ class SettingPanelComponent extends GetView<ReaderController> {
               padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
-                  Text(" Yazı Boyutu: "),
+                  Text(" ${'font_size'.tr}: "),
                   IconButton(
                     onPressed: () =>
                         controller.setFontSize(controller.fontSize.value - 1),
@@ -109,7 +113,7 @@ class SettingPanelComponent extends GetView<ReaderController> {
                       Icons.line_axis_outlined,
                       color: Colors.blue.shade600,
                     ),
-                    title: Text('Son Kayıtlı Sayfaya Git'),
+                    title: Text('go_to_last_saved_page'.tr),
                     onTap: controller.gotoLastSavedPage,
                   ),
                   ListTile(
@@ -117,7 +121,7 @@ class SettingPanelComponent extends GetView<ReaderController> {
                       Icons.mark_chat_read,
                       color: Colors.yellow.shade600,
                     ),
-                    title: Text('Notlar'),
+                    title: Text('my_notes'.tr),
                     onTap: _showAllPs,
                   ),
                 ],
@@ -150,9 +154,7 @@ class SettingPanelComponent extends GetView<ReaderController> {
   void _showAllPs() {
     Get.back();
     if (controller.pagePsModels.isEmpty) {
-      controller.warningMessage(
-        "Bu kitap için kaydedilmiş bir not bulunmamaktadır.",
-      );
+      controller.warningMessage("no_notes_saved_for_book".tr);
       return;
     }
     Get.toNamed(RouteConst.psListPage);

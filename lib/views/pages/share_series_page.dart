@@ -7,38 +7,41 @@ class ShareSeriesPage extends GetView<ShareSeriesController> {
   const ShareSeriesPage({super.key});
 
   Map<String, dynamic> getTimeBadgeInfo(int level) {
+    final minLabel = Get.locale?.languageCode == 'de' ? 'Min.' : 'min';
+    final trMinLabel = Get.locale?.languageCode == 'tr' ? 'dk' : minLabel;
+
     switch (level) {
       case 2:
         return {
-          "title": "Başlangıç",
-          "subtitle": "30 dk",
+          "title": "badge_earned_starter".tr,
+          "subtitle": "30 $trMinLabel",
           "icon": Icons.star_border,
           "color": Colors.blue,
         };
       case 3:
         return {
-          "title": "Azimli",
-          "subtitle": "60 dk",
+          "title": "badge_earned_determined".tr,
+          "subtitle": "60 $trMinLabel",
           "icon": Icons.star_half,
           "color": Colors.teal,
         };
       case 4:
         return {
-          "title": "Kitap Kurdu",
-          "subtitle": "90 dk",
+          "title": "badge_earned_bookworm".tr,
+          "subtitle": "90 $trMinLabel",
           "icon": Icons.star,
           "color": Colors.purple,
         };
       case 5:
         return {
-          "title": "Efsane",
-          "subtitle": "120 dk",
+          "title": "badge_earned_legend".tr,
+          "subtitle": "120 $trMinLabel",
           "icon": Icons.workspace_premium,
           "color": Colors.amber,
         };
       default:
         return {
-          "title": "Bilinmeyen",
+          "title": "warning".tr,
           "subtitle": "-",
           "icon": Icons.timer,
           "color": Colors.grey,
@@ -47,38 +50,40 @@ class ShareSeriesPage extends GetView<ShareSeriesController> {
   }
 
   Map<String, dynamic> getStreakBadgeInfo(int level) {
+    final dayLabel = "days".tr;
+
     switch (level) {
       case 2:
         return {
-          "title": "Isınma",
-          "subtitle": "3 gün",
+          "title": "badge_streak_warmup".tr,
+          "subtitle": "3 $dayLabel",
           "icon": Icons.whatshot,
           "color": Colors.orangeAccent,
         };
       case 3:
         return {
-          "title": "Disiplinli",
-          "subtitle": "7 gün",
+          "title": "badge_streak_disciplined".tr,
+          "subtitle": "7 $dayLabel",
           "icon": Icons.local_fire_department,
           "color": Colors.deepOrange,
         };
       case 4:
         return {
-          "title": "Bağımlı",
-          "subtitle": "30 gün",
+          "title": "badge_streak_addicted".tr,
+          "subtitle": "30 $dayLabel",
           "icon": Icons.fireplace,
           "color": Colors.red,
         };
       case 5:
         return {
-          "title": "Efsane",
-          "subtitle": "100 gün",
+          "title": "badge_streak_legend".tr,
+          "subtitle": "100 $dayLabel",
           "icon": Icons.military_tech,
           "color": Colors.amber,
         };
       default:
         return {
-          "title": "Bilinmeyen",
+          "title": "warning".tr,
           "subtitle": "-",
           "icon": Icons.timer,
           "color": Colors.grey,
@@ -95,7 +100,7 @@ class ShareSeriesPage extends GetView<ShareSeriesController> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text("Rozetini Paylaş")),
+        appBar: AppBar(title: Text("share_badge".tr)),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -132,9 +137,9 @@ class ShareSeriesPage extends GetView<ShareSeriesController> {
                               color: Get.theme.primaryColor,
                             ),
                             const SizedBox(height: 8),
-                            const Text(
-                              "Yeni Rozetler Kazandım!",
-                              style: TextStyle(
+                            Text(
+                              "earned_new_badges".tr,
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -186,7 +191,7 @@ class ShareSeriesPage extends GetView<ShareSeriesController> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  "Polyread ile Paylaşıldı",
+                                  "shared_with_polyread".tr,
                                   style: TextStyle(
                                     color: Colors.grey.shade600,
                                     fontSize: 12,
@@ -213,7 +218,7 @@ class ShareSeriesPage extends GetView<ShareSeriesController> {
                       controller.shareSeries();
                     },
                     icon: const Icon(Icons.share),
-                    label: const Text("Paylaş"),
+                    label: Text("share".tr),
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(double.infinity, 48),
                     ),

@@ -18,6 +18,8 @@ class VocabularyStorageModel {
   @Index(type: IndexType.value)
   late String? desc;
   @Index(type: IndexType.value)
+  late String? toLanguage;
+  @Index(type: IndexType.value)
   late String languageCode;
   @Index(type: IndexType.value)
   DateTime createdAt = DateTime.now();

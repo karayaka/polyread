@@ -17,9 +17,9 @@ class LibraryPage extends GetView<LibraryController> {
     Get.lazyPut(() => LibraryController());
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Kitaplık",
-          style: TextStyle(fontWeight: FontWeight.w600),
+        title: Text(
+          "library".tr,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: [
           IconButton(
@@ -72,7 +72,7 @@ class LibraryPage extends GetView<LibraryController> {
   Widget _bookGrid() => Obx(() {
     final books = controller.books;
     if (books.isEmpty && !controller.booksLoading.value) {
-      return const Center(child: Text("Sonuç bulunamadı"));
+      return Center(child: Text("no_results".tr));
     }
 
     return MasonryGridView.count(
@@ -136,8 +136,8 @@ class LibraryPage extends GetView<LibraryController> {
               onChanged: (value) => controller.searchBooks(value),
               autofocus: true,
               decoration: InputDecoration(
-                hint: Text("Ara..."),
-                suffixIcon: Icon(Icons.search),
+                hint: Text("search".tr),
+                suffixIcon: const Icon(Icons.search),
               ),
             ),
           ],
@@ -158,8 +158,8 @@ class LibraryPage extends GetView<LibraryController> {
               Padding(
                 padding: const EdgeInsets.only(left: 5),
                 child: Text(
-                  "Kategoriler",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  "categories".tr,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               HorizontalSelector(
@@ -176,8 +176,8 @@ class LibraryPage extends GetView<LibraryController> {
               Padding(
                 padding: const EdgeInsets.only(left: 5),
                 child: Text(
-                  "Diller",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  "languages".tr,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
               ),
               HorizontalSelector(

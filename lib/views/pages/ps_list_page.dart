@@ -11,7 +11,7 @@ class PsListPage extends GetView<ReaderController> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text("Notlarım")),
+        appBar: AppBar(title: Text("my_notes".tr)),
         body: Obx(() {
           if (controller.bookLoading.value) {
             return const Center(child: CircularProgressIndicator());
@@ -99,7 +99,7 @@ class PsListPage extends GetView<ReaderController> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        "Not: ${ps.ps}",
+                        "note_prefix".trParams({'note': ps.ps ?? ''}),
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,

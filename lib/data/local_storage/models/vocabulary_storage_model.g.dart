@@ -46,6 +46,11 @@ const VocabularyStorageModelSchema = CollectionSchema(
       type: IsarType.string,
     ),
     r'text': PropertySchema(id: 7, name: r'text', type: IsarType.string),
+    r'toLanguage': PropertySchema(
+      id: 8,
+      name: r'toLanguage',
+      type: IsarType.string,
+    ),
   },
 
   estimateSize: _vocabularyStorageModelEstimateSize,
@@ -132,6 +137,19 @@ const VocabularyStorageModelSchema = CollectionSchema(
         ),
       ],
     ),
+    r'toLanguage': IndexSchema(
+      id: 5355326792397085650,
+      name: r'toLanguage',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'toLanguage',
+          type: IndexType.value,
+          caseSensitive: true,
+        ),
+      ],
+    ),
     r'languageCode': IndexSchema(
       id: -2261715960661104426,
       name: r'languageCode',
@@ -184,6 +202,12 @@ int _vocabularyStorageModelEstimateSize(
   bytesCount += 3 + object.languageCode.length * 3;
   bytesCount += 3 + object.sourceWord.length * 3;
   bytesCount += 3 + object.text.length * 3;
+  {
+    final value = object.toLanguage;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -201,6 +225,7 @@ void _vocabularyStorageModelSerialize(
   writer.writeBool(offsets[5], object.onShowVocabulary);
   writer.writeString(offsets[6], object.sourceWord);
   writer.writeString(offsets[7], object.text);
+  writer.writeString(offsets[8], object.toLanguage);
 }
 
 VocabularyStorageModel _vocabularyStorageModelDeserialize(
@@ -219,6 +244,7 @@ VocabularyStorageModel _vocabularyStorageModelDeserialize(
   object.onShowVocabulary = reader.readBool(offsets[5]);
   object.sourceWord = reader.readString(offsets[6]);
   object.text = reader.readString(offsets[7]);
+  object.toLanguage = reader.readStringOrNull(offsets[8]);
   return object;
 }
 
@@ -245,6 +271,8 @@ P _vocabularyStorageModelDeserializeProp<P>(
       return (reader.readString(offset)) as P;
     case 7:
       return (reader.readString(offset)) as P;
+    case 8:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -327,6 +355,15 @@ extension VocabularyStorageModelQueryWhereSort
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'desc'),
+      );
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterWhere>
+  anyToLanguage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'toLanguage'),
       );
     });
   }
@@ -1310,6 +1347,220 @@ extension VocabularyStorageModelQueryWhere
             )
             .addWhereClause(
               IndexWhereClause.lessThan(indexName: r'desc', upper: ['']),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'toLanguage', value: [null]),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'toLanguage',
+          lower: [null],
+          includeLower: false,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageEqualTo(String? toLanguage) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'toLanguage', value: [toLanguage]),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageNotEqualTo(String? toLanguage) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'toLanguage',
+                lower: [],
+                upper: [toLanguage],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'toLanguage',
+                lower: [toLanguage],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'toLanguage',
+                lower: [toLanguage],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'toLanguage',
+                lower: [],
+                upper: [toLanguage],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageGreaterThan(String? toLanguage, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'toLanguage',
+          lower: [toLanguage],
+          includeLower: include,
+          upper: [],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageLessThan(String? toLanguage, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'toLanguage',
+          lower: [],
+          upper: [toLanguage],
+          includeUpper: include,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageBetween(
+    String? lowerToLanguage,
+    String? upperToLanguage, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'toLanguage',
+          lower: [lowerToLanguage],
+          includeLower: includeLower,
+          upper: [upperToLanguage],
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageStartsWith(String ToLanguagePrefix) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'toLanguage',
+          lower: [ToLanguagePrefix],
+          upper: ['$ToLanguagePrefix\u{FFFFF}'],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'toLanguage', value: ['']),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterWhereClause
+  >
+  toLanguageIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.lessThan(indexName: r'toLanguage', upper: ['']),
+            )
+            .addWhereClause(
+              IndexWhereClause.greaterThan(
+                indexName: r'toLanguage',
+                lower: [''],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.greaterThan(
+                indexName: r'toLanguage',
+                lower: [''],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.lessThan(indexName: r'toLanguage', upper: ['']),
             );
       }
     });
@@ -2733,6 +2984,213 @@ extension VocabularyStorageModelQueryFilter
       );
     });
   }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'toLanguage'),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'toLanguage'),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageEqualTo(String? value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'toLanguage',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'toLanguage',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'toLanguage',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'toLanguage',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'toLanguage',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageEndsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'toLanguage',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'toLanguage',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'toLanguage',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'toLanguage', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<
+    VocabularyStorageModel,
+    VocabularyStorageModel,
+    QAfterFilterCondition
+  >
+  toLanguageIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'toLanguage', value: ''),
+      );
+    });
+  }
 }
 
 extension VocabularyStorageModelQueryObject
@@ -2862,6 +3320,20 @@ extension VocabularyStorageModelQuerySortBy
   sortByTextDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'text', Sort.desc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByToLanguage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'toLanguage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  sortByToLanguageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'toLanguage', Sort.desc);
     });
   }
 }
@@ -2998,6 +3470,20 @@ extension VocabularyStorageModelQuerySortThenBy
       return query.addSortBy(r'text', Sort.desc);
     });
   }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByToLanguage() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'toLanguage', Sort.asc);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QAfterSortBy>
+  thenByToLanguageDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'toLanguage', Sort.desc);
+    });
+  }
 }
 
 extension VocabularyStorageModelQueryWhereDistinct
@@ -3055,6 +3541,13 @@ extension VocabularyStorageModelQueryWhereDistinct
   distinctByText({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'text', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, VocabularyStorageModel, QDistinct>
+  distinctByToLanguage({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'toLanguage', caseSensitive: caseSensitive);
     });
   }
 }
@@ -3125,6 +3618,13 @@ extension VocabularyStorageModelQueryProperty
   textProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'text');
+    });
+  }
+
+  QueryBuilder<VocabularyStorageModel, String?, QQueryOperations>
+  toLanguageProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'toLanguage');
     });
   }
 }
