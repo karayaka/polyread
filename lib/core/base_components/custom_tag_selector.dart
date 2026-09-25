@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
@@ -105,7 +104,7 @@ class _CustomTagSelectorState extends State<CustomTagSelector> {
                   focusNode: inputFieldValues.focusNode,
 
                   decoration: InputDecoration(
-                    helperText: "Etiket eklemek için enter tuşuna basın",
+                    helperText: 'tag_helper_text'.tr,
                     isDense: true,
                     border: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -122,7 +121,7 @@ class _CustomTagSelectorState extends State<CustomTagSelector> {
                     helperStyle: TextStyle(color: Get.theme.primaryColor),
                     hintText: inputFieldValues.tags.isNotEmpty
                         ? ''
-                        : "Etiketle...",
+                        : 'tag_hint'.tr,
                     errorText: inputFieldValues.error,
                     prefixIconConstraints: BoxConstraints(
                       maxWidth: _distanceToField * 0.74,

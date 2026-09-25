@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomInfoProgress extends StatefulWidget {
   /// Gösterilecek mesajların listesi. Boş bırakılırsa varsayılan mesajlar kullanılır.
@@ -32,11 +33,11 @@ class _CustomInfoProgressState extends State<CustomInfoProgress> {
     _messages =
         widget.customMessages ??
         [
-          "Bağlantı kuruluyor...",
-          "Veritabanları taranıyor...",
-          "İçerik analiz ediliyor...",
-          "Bilgiler derleniyor...",
-          "Son yapılandırmalar tamamlanıyor...",
+          'connecting'.tr,
+          'scanning_databases'.tr,
+          'analyzing_content'.tr,
+          'gathering_data'.tr,
+          'finalizing_setup'.tr,
         ];
 
     // Belirlenen süre aralığında sayacı artırıp mesajı değiştiriyoruz

@@ -143,7 +143,7 @@ class VocabularyComponent extends GetView<VocabularyController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "TEXT",
+                                "text_uppercase".tr,
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -187,7 +187,7 @@ class VocabularyComponent extends GetView<VocabularyController> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "ANLAMI",
+                                "translation".tr,
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -235,7 +235,7 @@ class VocabularyComponent extends GetView<VocabularyController> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            "Çeviri bulunamadı",
+                            "translation_not_found".tr,
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.grey.shade600,

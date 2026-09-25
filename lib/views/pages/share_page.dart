@@ -120,8 +120,14 @@ class SharePage extends GetView<ShareController> {
                 indicatorColor: Theme.of(context).primaryColor,
                 indicatorWeight: 3,
                 tabs: [
-                  Tab(icon: const Icon(Icons.format_paint, size: 16), text: "format_uppercase".tr),
-                  Tab(icon: const Icon(Icons.text_format, size: 16), text: "text_uppercase".tr),
+                  Tab(
+                    icon: const Icon(Icons.format_paint, size: 16),
+                    text: "format_uppercase".tr,
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.text_format, size: 16),
+                    text: "text_uppercase".tr,
+                  ),
                   Tab(
                     icon: const Icon(Icons.color_lens, size: 16),
                     text: "background_uppercase".tr,
@@ -267,7 +273,7 @@ class SharePage extends GetView<ShareController> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "Polyread ile Paylaşıldı",
+                      'shared_with_polyread'.tr,
                       style: TextStyle(
                         color: controller.textColor.value.withValues(
                           alpha: 0.5,
@@ -325,8 +331,8 @@ class SharePage extends GetView<ShareController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Yazı Boyutu",
+              Text(
+                "font_size_uppercase".tr,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
               ),
               Text(

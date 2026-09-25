@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 import 'package:get/get.dart';
@@ -21,214 +20,206 @@ class ReaderPage extends GetView<ReaderController> {
         if (didPop) return;
         await controller.askSaveBookmarkOnExit();
       },
-      child: Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: SafeArea(
-          child: Scaffold(
-            key: controller.scaffoldKey,
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(8),
-              child: Obx(() {
-                if (controller.chapterLoading.value) {
-                  return LinearProgressIndicator();
+      child: SafeArea(
+        child: Scaffold(
+          key: controller.scaffoldKey,
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(8),
+            child: Obx(() {
+              if (controller.chapterLoading.value) {
+                return LinearProgressIndicator();
+              } else {
+                return SizedBox.shrink();
+              }
+            }),
+          ),
+          drawer: ChapterDrawerComponent(),
+          body: Stack(
+            children: [
+              // EpubViewer her zaman ağaçta kabi alır, unmount olmaz
+              Obx(() {
+                if (controller.bookLoading.value) {
+                  return const SizedBox.shrink();
+                }
+                return EpubViewer(
+                  key: ValueKey('epub_${controller.bookPath}'),
+                  initialCfi: controller.bookFromDb?.lastLocationCfi,
+                  epubSource: EpubSource.fromData(
+                    File(controller.bookPath ?? "").readAsBytesSync(),
+                  ),
+                  epubController: controller.epubController,
+                  selectAnnotationRange: true,
+                  displaySettings: EpubDisplaySettings(
+                    flow: EpubFlow.paginated,
+                    useSnapAnimationAndroid: false,
+                    snap: true,
+                    theme: EpubTheme.light(),
+                    allowScriptedContent: true,
+                  ),
+                  onChaptersLoaded: (chapters) {
+                    if (chapters.isNotEmpty) {
+                      controller.chapterLoaded(chapters);
+                    }
+                  },
+                  onEpubLoaded: () {
+                    controller.epubLoaded();
+                  },
+                  onRelocated: (value) {
+                    controller.showbottomBar.value = false;
+                    controller.isSavedLocation.value =
+                        controller.lastSavedLocationCfi == value.startCfi;
+                  },
+                  onSelection:
+                      (selectedText, cfiRange, selectionRect, viewRect) async {
+                        if (await controller.onSelection(
+                          selectedText,
+                          cfiRange,
+                        )) {
+                          await controller.addPsOrHihglight();
+                        }
+                      },
+                  onDeselection: () {
+                    controller.selectionRange = null;
+                    controller.selectedText = null;
+                  },
+                  selectionContextMenu: EpubContextMenu(
+                    hideDefaultSystemItems: true,
+                    items: [
+                      EpubContextMenuItem(
+                        title: "translate".tr,
+                        id: 1,
+                        action: () {
+                          _showVocabularyPanel(controller.selectedText ?? "");
+                        },
+                      ),
+                      EpubContextMenuItem(
+                        title: "note".tr,
+                        id: 2,
+                        action: () async {
+                          await controller.addPsOrHihglight();
+                        },
+                      ),
+                      EpubContextMenuItem(
+                        title: "share".tr,
+                        id: 3,
+                        action: () async {
+                          RouteFix.toSharePage(
+                            controller.selectedText ?? "",
+                            controller.bookFromDb?.id ?? 0,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  onTouchUp: (x, y) async {
+                    controller.showbottomBar.value =
+                        !controller.showbottomBar.value;
+                    if (controller.selectionRange != null) {
+                      controller.epubController.clearSelection();
+                    }
+                  },
+                );
+              }),
+
+              // onEpubLoaded tetiklenene kadar beyaz overlay göster
+              Obx(() {
+                if (!controller.epubReady.value) {
+                  return Container(
+                    color: Colors.white,
+                    child: ReadCircularProgresComponent(
+                      onRetry: () {
+                        controller.loadBook();
+                      },
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+              Obx(() {
+                if (controller.showbottomBar.value) {
+                  return Positioned(
+                    bottom: 10,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white60,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      height: 35,
+                      width: Get.size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back),
+                            onPressed: () {
+                              controller.epubController.prev();
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.settings),
+                            onPressed: () =>
+                                _showSettingPanel(), //_showSettingPanel,
+                          ),
+                          IconButton(
+                            onPressed: controller.loadBook,
+                            icon: Icon(Icons.refresh),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward),
+                            onPressed: () {
+                              controller.epubController.next();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
                 } else {
                   return SizedBox.shrink();
                 }
               }),
-            ),
-            drawer: ChapterDrawerComponent(),
-            body: Stack(
-              children: [
-                // EpubViewer her zaman ağaçta kabi alır, unmount olmaz
-                Obx(() {
-                  if (controller.bookLoading.value) {
-                    return const SizedBox.shrink();
-                  }
-                  return EpubViewer(
-                    key: ValueKey('epub_${controller.bookPath}'),
-                    initialCfi: controller.bookFromDb?.lastLocationCfi,
-                    epubSource: EpubSource.fromData(
-                      File(controller.bookPath ?? "").readAsBytesSync(),
-                    ),
-                    epubController: controller.epubController,
-                    selectAnnotationRange: true,
-                    displaySettings: EpubDisplaySettings(
-                      flow: EpubFlow.paginated,
-                      useSnapAnimationAndroid: false,
-                      snap: true,
-                      theme: EpubTheme.light(),
-                      allowScriptedContent: true,
-                    ),
-                    onChaptersLoaded: (chapters) {
-                      if (chapters.isNotEmpty) {
-                        controller.chapterLoaded(chapters);
-                      }
-                    },
-                    onEpubLoaded: () {
-                      controller.epubLoaded();
-                    },
-                    onRelocated: (value) {
-                      controller.showbottomBar.value = false;
-                      controller.isSavedLocation.value =
-                          controller.lastSavedLocationCfi == value.startCfi;
-                    },
-                    onSelection:
-                        (
-                          selectedText,
-                          cfiRange,
-                          selectionRect,
-                          viewRect,
-                        ) async {
-                          if (await controller.onSelection(
-                            selectedText,
-                            cfiRange,
-                          )) {
-                            await controller.addPsOrHihglight();
-                          }
-                        },
-                    onDeselection: () {
-                      controller.selectionRange = null;
-                      controller.selectedText = null;
-                    },
-                    selectionContextMenu: EpubContextMenu(
-                      hideDefaultSystemItems: true,
-                      items: [
-                        EpubContextMenuItem(
-                          title: "Çevir",
-                          id: 1,
-                          action: () {
-                            _showVocabularyPanel(controller.selectedText ?? "");
-                          },
-                        ),
-                        EpubContextMenuItem(
-                          title: "Not/Vurgula",
-                          id: 2,
-                          action: () async {
-                            await controller.addPsOrHihglight();
-                          },
-                        ),
-                        EpubContextMenuItem(
-                          title: "Paylaş",
-                          id: 3,
-                          action: () async {
-                            RouteFix.toSharePage(
-                              controller.selectedText ?? "",
-                              controller.bookFromDb?.id ?? 0,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    onTouchUp: (x, y) async {
-                      controller.showbottomBar.value =
-                          !controller.showbottomBar.value;
-                      if (controller.selectionRange != null) {
-                        controller.epubController.clearSelection();
-                      }
-                    },
-                  );
-                }),
-
-                // onEpubLoaded tetiklenene kadar beyaz overlay göster
-                Obx(() {
-                  if (!controller.epubReady.value) {
-                    return Container(
-                      color: Colors.white,
-                      child: ReadCircularProgresComponent(
-                        onRetry: () {
-                          controller.loadBook();
-                        },
+              Obx(() {
+                if (controller.showbottomBar.value) {
+                  return Positioned(
+                    top: 10,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white60,
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                }),
-                Obx(() {
-                  if (controller.showbottomBar.value) {
-                    return Positioned(
-                      bottom: 10,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white60,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        height: 35,
-                        width: Get.size.width,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.arrow_back),
-                              onPressed: () {
-                                controller.epubController.prev();
+                      height: 35,
+                      width: Get.size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Obx(
+                            () => IconButton(
+                              onPressed: () async {
+                                await controller.saveBookmark();
                               },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.settings),
-                              onPressed: () =>
-                                  _showSettingPanel(), //_showSettingPanel,
-                            ),
-                            IconButton(
-                              onPressed: controller.loadBook,
-                              icon: Icon(Icons.refresh),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.arrow_forward),
-                              onPressed: () {
-                                controller.epubController.next();
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  } else {
-                    return SizedBox.shrink();
-                  }
-                }),
-                Obx(() {
-                  if (controller.showbottomBar.value) {
-                    return Positioned(
-                      top: 10,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white60,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        height: 35,
-                        width: Get.size.width,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Obx(
-                              () => IconButton(
-                                onPressed: () async {
-                                  await controller.saveBookmark();
-                                },
-                                icon: Icon(
-                                  Icons.bookmark,
-                                  color: controller.isSavedLocation.value
-                                      ? Get.theme.primaryColor
-                                      : Colors.grey,
-                                ),
+                              icon: Icon(
+                                Icons.bookmark,
+                                color: controller.isSavedLocation.value
+                                    ? Get.theme.primaryColor
+                                    : Colors.grey,
                               ),
                             ),
-                            IconButton(
-                              onPressed: () {
-                                controller.openChapterDrawer();
-                              },
-                              icon: Icon(Icons.menu),
-                            ),
-                          ],
-                        ),
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              controller.openChapterDrawer();
+                            },
+                            icon: Icon(Icons.menu),
+                          ),
+                        ],
                       ),
-                    );
-                  } else {
-                    return SizedBox.shrink();
-                  }
-                }),
-              ],
-            ),
+                    ),
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              }),
+            ],
           ),
         ),
       ),

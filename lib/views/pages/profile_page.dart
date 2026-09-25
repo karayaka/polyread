@@ -10,67 +10,78 @@ class ProfilePage extends GetView<ProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "profile".tr,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final minutes = controller.average10DaysMinutes;
-        final streak = controller.maxContinuousStreak;
-
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildStatsCard(context, minutes, streak),
-              const SizedBox(height: 32),
-              Text(
-                "reading_time_badges".tr,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildReadingTimeBadges(minutes),
-              const SizedBox(height: 32),
-              Text(
-                "streak_badges".tr,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildStreakBadges(streak),
-              const SizedBox(height: 32),
-              Text(
-                "language_settings".tr,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              _buildLanguageSelector(context),
-              const SizedBox(height: 32),
-            ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "profile".tr,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-        );
-      }),
-      bottomNavigationBar: Obx(() {
-        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
-          return SafeArea(
-            child: SizedBox(
-              width: controller.bannerAd!.size.width.toDouble(),
-              height: controller.bannerAd!.size.height.toDouble(),
-              child: AdWidget(ad: controller.bannerAd!),
+          centerTitle: true,
+          elevation: 0,
+        ),
+        body: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final minutes = controller.average10DaysMinutes;
+          final streak = controller.maxContinuousStreak;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildStatsCard(context, minutes, streak),
+                const SizedBox(height: 32),
+                Text(
+                  "reading_time_badges".tr,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildReadingTimeBadges(minutes),
+                const SizedBox(height: 32),
+                Text(
+                  "streak_badges".tr,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildStreakBadges(streak),
+                const SizedBox(height: 32),
+                Text(
+                  "language_settings".tr,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildLanguageSelector(context),
+                const SizedBox(height: 32),
+              ],
             ),
           );
-        }
-        return const SizedBox.shrink();
-      }),
+        }),
+        bottomNavigationBar: Obx(() {
+          if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+            return SafeArea(
+              child: SizedBox(
+                width: controller.bannerAd!.size.width.toDouble(),
+                height: controller.bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: controller.bannerAd!),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+      ),
     );
   }
 
@@ -229,6 +240,7 @@ class ProfilePage extends GetView<ProfileController> {
     if (currentLocale.languageCode == 'es') currentLanguageName = 'lang_es'.tr;
     if (currentLocale.languageCode == 'fr') currentLanguageName = 'lang_fr'.tr;
     if (currentLocale.languageCode == 'de') currentLanguageName = 'lang_de'.tr;
+    if (currentLocale.languageCode == 'it') currentLanguageName = 'lang_it'.tr;
 
     return Card(
       elevation: 2,
@@ -255,10 +267,13 @@ class ProfilePage extends GetView<ProfileController> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
                   'select_language'.tr,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const Divider(height: 1),
@@ -267,6 +282,7 @@ class ProfilePage extends GetView<ProfileController> {
               _buildLanguageOption('lang_es'.tr, 'es'),
               _buildLanguageOption('lang_fr'.tr, 'fr'),
               _buildLanguageOption('lang_de'.tr, 'de'),
+              _buildLanguageOption('lang_it'.tr, 'it'),
               const SizedBox(height: 16),
             ],
           ),
@@ -279,7 +295,9 @@ class ProfilePage extends GetView<ProfileController> {
     final isSelected = (Get.locale?.languageCode ?? 'tr') == code;
     return ListTile(
       title: Text(name),
-      trailing: isSelected ? Icon(Icons.check, color: Get.theme.primaryColor) : null,
+      trailing: isSelected
+          ? Icon(Icons.check, color: Get.theme.primaryColor)
+          : null,
       onTap: () {
         final locale = Locale(code);
         Get.updateLocale(locale);

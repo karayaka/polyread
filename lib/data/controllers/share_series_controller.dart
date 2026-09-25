@@ -30,7 +30,7 @@ class ShareSeriesController extends BaseController {
               as RenderRepaintBoundary?;
 
       if (boundary == null) {
-        errorMessage("Görüntü alınamadı");
+        errorMessage('image_capture_failed'.tr);
         return;
       }
       // Resmi yüksek çözünürlükte almak için pixelRatio arttırıldı.
@@ -40,7 +40,7 @@ class ShareSeriesController extends BaseController {
       );
 
       if (byteData == null) {
-        errorMessage("Görüntü dönüştürülemedi");
+        errorMessage('image_conversion_failed'.tr);
         return;
       }
 
@@ -52,10 +52,10 @@ class ShareSeriesController extends BaseController {
       File(imagePath).writeAsBytesSync(pngBytes);
 
       final shareText =
-          "Yeni bir rozet kazandım!\n\n📱 PolyRead ile Paylaşıldı";
+          '${'earned_new_badges'.tr}\n\n📱 ${'shared_with_polyread'.tr}';
       await Share.shareXFiles([XFile(imagePath)], text: shareText);
     } catch (e) {
-      errorMessage("Paylaşım başarısız: ${e.toString()}");
+      errorMessage('share_failed_detail'.trParams({'error': e.toString()}));
     }
   }
 }

@@ -20,7 +20,11 @@ class MyBooksController extends BaseController {
   var myBooksLoading = false.obs;
   var importLoading = false.obs;
   var books = RxList<LibraryStorageModel>();
-  SelectModel? selectStatus = SelectModel(key: "", value: "Tümü");
+  var allBooks = RxList<LibraryStorageModel>();
+  RxList<SelectModel> tagList = RxList<SelectModel>();
+  var selectedTag = SelectModel(key: "", value: "all".tr).obs;
+
+  /// Tüm kitaplardaki unique tag listesi
 
   BannerAd? bannerAd;
   BannerAd? editBannerAd;
@@ -81,9 +85,35 @@ class MyBooksController extends BaseController {
     super.onClose();
   }
 
+  Future loadTagselector() async {
+    tagList.clear();
+    tagList.add(SelectModel(key: "", value: "all".tr));
+    var tags = allBooks
+        .map((e) => e.tags ?? [])
+        .expand((e) => e)
+        .toSet()
+        .toList();
+    tags.sort();
+    for (var tag in tags) {
+      tagList.add(SelectModel(key: tag, value: tag));
+    }
+  }
+
+  void filterBooks() {
+    if (selectedTag.value.key == "") {
+      books.value = allBooks.toList();
+    } else {
+      books.value = allBooks
+          .where((e) => e.tags?.contains(selectedTag.value.key) ?? false)
+          .toList();
+    }
+  }
+
   Future getMyBooks() async {
     try {
-      books.value = await db.getAllLibrary();
+      allBooks.value = await db.getAllLibrary();
+      await loadTagselector();
+      filterBooks();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ExternalBookService.instance.markAppReady();
       });

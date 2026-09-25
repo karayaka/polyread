@@ -8,6 +8,8 @@ class EditBookModel {
   List<String>? authors;
   String? languages;
   String? coverPath;
+  List<String>? tags;
+
   EditBookModel({
     required this.id,
     required this.bookId,
@@ -16,6 +18,7 @@ class EditBookModel {
     this.title,
     this.coverPath,
     this.languages,
+    this.tags,
   });
 
   LibraryStorageModel toLibraryStorageModel() {
@@ -26,6 +29,7 @@ class EditBookModel {
     model.langugeCode = languages;
     model.progres = 0;
     model.bookCoverPath = coverPath;
+    model.tags = tags;
     model.lastUpdate = DateTime.now();
     return model;
   }

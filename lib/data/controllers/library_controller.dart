@@ -196,7 +196,7 @@ class LibraryController extends BaseController {
         books.addAll(bk.results.map((e) => e.toLibraryBook()).toList());
       }
     } catch (e) {
-      errorMessage("Bir Sorun Ouştu Lütfen Daha Sonra Deneyin!");
+      errorMessage("general_error_message".tr);
     }
   }
 
@@ -290,9 +290,7 @@ class LibraryController extends BaseController {
         Get.find<MyBooksController>().getMyBooks();
       }
     } catch (e) {
-      errorMessage(
-        "indirme sırasında bir hata oluştu, lütfen daha sonra tekrar deneyin",
-      );
+      errorMessage("download_error_message".tr);
       await LibraryService.instance.deleteBook(id);
       bookDowloandProgres.value = 0;
     }
@@ -306,7 +304,7 @@ class LibraryController extends BaseController {
         arguments: {"bookId": book.bookId, "bookPath": book.bookPath},
       );
     } else {
-      errorMessage("Kitap bulunamadı");
+      errorMessage("book_not_found_message".tr);
     }
   }
 

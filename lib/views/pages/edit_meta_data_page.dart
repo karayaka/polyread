@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:polyread/core/app_tools/tools.dart';
 import 'package:polyread/core/base_components/custom_file_image_component.dart';
+import 'package:polyread/core/base_components/custom_tag_selector.dart';
 import 'package:polyread/data/controllers/edit_meta_data_controller.dart';
 
 class EditMetaDataPage extends GetView<EditMetaDataController> {
@@ -198,7 +199,25 @@ class EditMetaDataPage extends GetView<EditMetaDataController> {
                               },
                             );
                           }),
+                          const SizedBox(height: 24),
+                          const Divider(),
+                          const SizedBox(height: 16),
+
+                          // Etiketler
+                          Text(
+                            "tags".tr,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          CustomTagSelector(
+                            stringTagController: controller.tagController,
+                            suggestion: controller.suggestionTags,
+                            initialTags: controller.formModel?.tags ?? [],
+                          ),
                           const SizedBox(height: 32),
+
+                          // Kaydet Butonu
                           Row(
                             children: [
                               Expanded(

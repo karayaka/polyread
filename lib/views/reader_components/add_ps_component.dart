@@ -20,7 +20,7 @@ class AddPsComponent extends GetView<ReaderController> {
         children: [
           TextFormField(
             initialValue: controller.psFormModel?.ps ?? "",
-            decoration: InputDecoration(hintText: "Not."),
+            decoration: InputDecoration(hintText: 'note'.tr),
             onChanged: (value) => controller.psFormModel?.ps = value,
           ),
           SimpleColorPicker(

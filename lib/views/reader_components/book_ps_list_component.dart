@@ -41,11 +41,11 @@ class BookPsListComponent extends GetView<ReaderController> {
               ),
             ),
 
-            const Padding(
-              padding: EdgeInsets.only(left: 20, right: 20, bottom: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 8),
               child: Text(
-                "Notlar ve Vurgular",
-                style: TextStyle(
+                'notes_and_highlights'.tr,
+                style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   letterSpacing: -0.5,
@@ -72,7 +72,8 @@ class BookPsListComponent extends GetView<ReaderController> {
               child: ListView.separated(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 itemCount: controller.psList.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
                 itemBuilder: (context, i) {
                   var ps = controller.psList[i];
                   return Container(
@@ -92,7 +93,9 @@ class BookPsListComponent extends GetView<ReaderController> {
                       onTap: () {
                         if (ps.pageCfi != null) {
                           Get.back();
-                          controller.epubController.display(cfi: ps.pageCfi ?? "");
+                          controller.epubController.display(
+                            cfi: ps.pageCfi ?? "",
+                          );
                         }
                       },
                       child: Padding(
@@ -162,24 +165,24 @@ class BookPsListComponent extends GetView<ReaderController> {
   }
 
   Widget _getTags(List<String>? tags) => Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: (tags ?? []).map((tag) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Get.theme.primaryColor,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              "#$tag",
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          );
-        }).toList(),
+    spacing: 8,
+    runSpacing: 8,
+    children: (tags ?? []).map((tag) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          "#$tag",
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       );
+    }).toList(),
+  );
 }

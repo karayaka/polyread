@@ -40,7 +40,7 @@ class VocabularyController extends BaseController {
     // Add error handler
     flutterTts.setErrorHandler((msg) {
       isSpeaking.value = false;
-      errorMessage("Seslendirme hatası: $msg");
+      errorMessage('tts_error_detail'.trParams({'message': msg}));
     });
 
     super.onInit();
@@ -121,7 +121,11 @@ class VocabularyController extends BaseController {
             ..desc = "",
         );
       } else {
-        errorMessage("Desteklenmeyen dil: ${data?.detectedLanguage}");
+        errorMessage(
+          'unsupported_language'.trParams({
+            'language': data?.detectedLanguage ?? '',
+          }),
+        );
       }
 
       translateLoading.value = false;
@@ -133,7 +137,7 @@ class VocabularyController extends BaseController {
 
   Future speak(int speetType) async {
     if (languge == null) {
-      errorMessage("Dil bilgisi bulunamadı");
+      errorMessage('language_not_found'.tr);
       return;
     }
 
@@ -152,7 +156,7 @@ class VocabularyController extends BaseController {
       await flutterTts.speak(vocabularyData?.sourceText ?? "");
     } catch (e) {
       isSpeaking.value = false;
-      errorMessage("Seslendirme başlatılamadı");
+      errorMessage('tts_start_failed'.tr);
     }
   }
 
@@ -174,8 +178,8 @@ class VocabularyController extends BaseController {
         );
         succesMessage(
           isSavedToHistory.value
-              ? "Kelimelerime kaydedildi."
-              : "Kelimelerimden kaldırıldı.",
+              ? 'word_saved_to_history'.tr
+              : 'word_removed_from_history'.tr,
         );
       }
     } catch (e) {

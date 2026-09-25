@@ -13,76 +13,78 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("vocabulary_history".tr)),
-      body: Column(
-        children: [
-          _buildAdBanner(),
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: Text("vocabulary_history".tr)),
+        body: Column(
+          children: [
+            _buildAdBanner(),
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              final grouped = controller.groupedVocabulary;
+                final grouped = controller.groupedVocabulary;
 
-              if (grouped.isEmpty) {
-                return Center(
-                  child: Text("no_saved_words".tr),
-                );
-              }
+                if (grouped.isEmpty) {
+                  return Center(child: Text("no_saved_words".tr));
+                }
 
-              if (grouped.keys.length == 1) {
-                return _buildListView(grouped.values.first);
-              }
+                if (grouped.keys.length == 1) {
+                  return _buildListView(grouped.values.first);
+                }
 
-              return DefaultTabController(
-                length: grouped.keys.length,
-                child: Column(
-                  children: [
-                    TabBar(
-                      isScrollable: true,
-                      labelColor: Get.theme.primaryColor,
-                      unselectedLabelColor: Colors.grey,
-                      indicatorColor: Get.theme.primaryColor,
-                      tabs: grouped.keys.map((langCode) {
-                        var lang = Tools.languges.firstWhereOrNull(
-                          (l) => l.key == langCode,
-                        );
-                        return Tab(text: lang?.value ?? langCode.toUpperCase());
-                      }).toList(),
-                    ),
-                    Expanded(
-                      child: TabBarView(
-                        children: grouped.values.map((list) {
-                          return _buildListView(list);
+                return DefaultTabController(
+                  length: grouped.keys.length,
+                  child: Column(
+                    children: [
+                      TabBar(
+                        isScrollable: true,
+                        labelColor: Get.theme.primaryColor,
+                        unselectedLabelColor: Colors.grey,
+                        indicatorColor: Get.theme.primaryColor,
+                        tabs: grouped.keys.map((langCode) {
+                          var lang = Tools.languges.firstWhereOrNull(
+                            (l) => l.key == langCode,
+                          );
+                          return Tab(
+                            text: lang?.value ?? langCode.toUpperCase(),
+                          );
                         }).toList(),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Obx(() {
-        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
-          return SafeArea(
-            child: SizedBox(
-              width: controller.bannerAd!.size.width.toDouble(),
-              height: controller.bannerAd!.size.height.toDouble(),
-              child: AdWidget(ad: controller.bannerAd!),
+                      Expanded(
+                        child: TabBarView(
+                          children: grouped.values.map((list) {
+                            return _buildListView(list);
+                          }).toList(),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
             ),
-          );
-        }
-        return const SizedBox.shrink();
-      }),
+          ],
+        ),
+        bottomNavigationBar: Obx(() {
+          if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+            return SafeArea(
+              child: SizedBox(
+                width: controller.bannerAd!.size.width.toDouble(),
+                height: controller.bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: controller.bannerAd!),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
+      ),
     );
   }
 
   Widget _buildAdBanner() {
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid && controller.getDeviceLanguageCode() == "tr") {
       return Obx(() {
         if (!controller.isPromoVisible.value) {
           return Padding(
@@ -154,7 +156,10 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
               children: [
                 Text(
                   "recommended_app_title".tr,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 TextButton(
                   onPressed: onTap,
@@ -190,9 +195,7 @@ class VocabularyHistoryPage extends GetView<VocabularyHistoryController> {
 
   Widget _buildListView(List<VocabularyStorageModel> list) {
     if (list.isEmpty) {
-      return Center(
-        child: Text("no_words_in_language".tr),
-      );
+      return Center(child: Text("no_words_in_language".tr));
     }
     return ListView.separated(
       itemCount: list.length,

@@ -35,7 +35,7 @@ class VocabularyHistoryController extends BaseController {
     });
     flutterTts.setErrorHandler((msg) {
       isSpeaking.value = false;
-      errorMessage("Seslendirme hatası: $msg");
+      errorMessage('tts_error_detail'.trParams({'message': msg}));
     });
   }
 
@@ -126,7 +126,7 @@ class VocabularyHistoryController extends BaseController {
   Future speak(String sourceWord, String langCode, int speetType) async {
     var lang = Tools.languges.firstWhereOrNull((l) => l.key == langCode);
     if (lang == null) {
-      errorMessage("Dil bilgisi bulunamadı");
+      errorMessage('language_not_found'.tr);
       return;
     }
 
@@ -153,7 +153,7 @@ class VocabularyHistoryController extends BaseController {
       isSpeaking.value = false;
     } catch (e) {
       isSpeaking.value = false;
-      errorMessage("Seslendirme başlatılamadı");
+      errorMessage('tts_start_failed'.tr);
     }
   }
 }

@@ -37,7 +37,7 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            controller.bookFromDb?.bookTitle ?? 'Bölümler',
+                            controller.bookFromDb?.bookTitle ?? 'chapters'.tr,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -48,7 +48,9 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '${controller.chapters.length} bölüm',
+                            'chapters_count'.trParams({
+                              'count': '${controller.chapters.length}',
+                            }),
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.85),
                               fontSize: 12,
@@ -68,7 +70,7 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
               child: TextField(
                 onChanged: (v) => controller.filterChapters(v),
                 decoration: InputDecoration(
-                  hintText: 'Bölümlerde ara...',
+                  hintText: 'search_chapters'.tr,
                   prefixIcon: const Icon(Icons.search),
 
                   filled: true,
@@ -86,7 +88,7 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
                 child: controller.chapters.isEmpty
                     ? Center(
                         child: Text(
-                          'Bölüm bulunamadı',
+                          'chapter_not_found'.tr,
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       )
@@ -133,7 +135,10 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
                                       );
                                       Get.back();
                                     } catch (_) {
-                                      Get.snackbar('Hata', 'Bölüme gidilemedi');
+                                      Get.snackbar(
+                                        'error'.tr,
+                                        'could_not_navigate_chapter'.tr,
+                                      );
                                     }
                                   }
                                 },
@@ -151,7 +156,10 @@ class ChapterDrawerComponent extends GetView<ReaderController> {
                                     );
                                     Get.back();
                                   } catch (_) {
-                                    Get.snackbar('Hata', 'Bölüme gidilemedi');
+                                    Get.snackbar(
+                                      'error'.tr,
+                                      'could_not_navigate_chapter'.tr,
+                                    );
                                   }
                                 }
                               },

@@ -8,6 +8,7 @@ import 'package:polyread/data/local_storage/models/library_storage_model.dart';
 import 'package:polyread/data/repositories/library_repository.dart';
 import 'package:polyread/data/services/library_service.dart';
 import 'package:polyread/models/dto_models/my_books_models/edit_book_model.dart';
+import 'package:textfield_tags/textfield_tags.dart';
 
 class EditMetaDataController extends BaseController {
   late LibraryRepository db;
@@ -23,13 +24,25 @@ class EditMetaDataController extends BaseController {
   TextEditingController autorController = TextEditingController();
   String newCoverPath = "";
   var saveButtonLoading = false.obs;
+
+  // Tag yönetimi
+  late StringTagController tagController;
+  List<String> suggestionTags = [];
+
   EditMetaDataController() {
     id = int.parse(Get.parameters["id"] ?? "0");
     db = Get.find();
   }
 
+  void setInitialId({int id = 0}) {
+    if (id != 0) this.id = id;
+  }
+
+  get tagList => null;
+
   @override
   void onInit() {
+    tagController = StringTagController();
     getFormModel();
     super.onInit();
   }
@@ -42,9 +55,19 @@ class EditMetaDataController extends BaseController {
         originalModel = mdl;
         toModel(mdl);
       }
+      await _loadSuggestionTags();
       formLoading.value = false;
     } catch (e) {
       errorMessage(e.toString());
+      formLoading.value = false;
+    }
+  }
+
+  Future _loadSuggestionTags() async {
+    try {
+      suggestionTags = await db.getAllTags();
+    } catch (e) {
+      // ignore
     }
   }
 
@@ -60,8 +83,9 @@ class EditMetaDataController extends BaseController {
       bookPath: model.bookPath,
       title: model.bookTitle,
       coverPath: model.bookCoverPath,
-      authors: model.authors, //bu konuya bakıacak
+      authors: model.authors,
       languages: _setLanguge(model.langugeCode),
+      tags: model.tags,
     );
   }
 
@@ -86,7 +110,6 @@ class EditMetaDataController extends BaseController {
             newCoverFile: File(newCoverPath),
           );
         }
-        // todo burda katapda kaldığı yr gibi bilgilerde güncellencek
         if (formModel != null) {
           final updatedBook = LibraryStorageModel();
           updatedBook.id = formModel!.id;
@@ -99,6 +122,7 @@ class EditMetaDataController extends BaseController {
           updatedBook.authors = autors;
           updatedBook.langugeCode = selectedLanguge.value;
           updatedBook.progres = originalModel?.progres ?? 0;
+          updatedBook.tags = tagController.getTags;
           updatedBook.lastUpdate = DateTime.now();
 
           await db.saveLibraryBook(updatedBook);
@@ -111,6 +135,8 @@ class EditMetaDataController extends BaseController {
     } catch (e) {
       errorMessage(e.toString());
       formLoading.value = false;
+    } finally {
+      saveButtonLoading.value = false;
     }
   }
 

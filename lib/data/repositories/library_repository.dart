@@ -77,6 +77,22 @@ class LibraryRepository {
     }
   }
 
+  Future<List<String>> getAllTags() async {
+    try {
+      final isar = await _isarService.db;
+      final allBooks = await isar.libraryStorageModels.where().findAll();
+      final tags = allBooks
+          .expand((book) => book.tags ?? <String>[])
+          .toSet()
+          .cast<String>()
+          .toList()
+        ..sort();
+      return tags;
+    } catch (e) {
+      return <String>[];
+    }
+  }
+
   Future<SyncDbStorageModel?> getLastSyncDate() async {
     try {
       final isar = await _isarService.db;

@@ -36,6 +36,7 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2),
             child: ChoiceChip(
+              checkmarkColor: Colors.white,
               label: Text(
                 item.value,
                 style: TextStyle(
@@ -44,6 +45,7 @@ class _HorizontalSelectorState extends State<HorizontalSelector> {
                 ),
               ),
               selected: isSelected,
+
               selectedColor: Colors.deepPurple,
               backgroundColor: Colors.grey.shade200,
               elevation: isSelected ? 3 : 0,

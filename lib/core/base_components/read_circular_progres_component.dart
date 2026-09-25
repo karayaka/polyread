@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:get/utils.dart';
 
 class ReadCircularProgresComponent extends StatefulWidget {
   final VoidCallback onRetry;
@@ -8,7 +9,7 @@ class ReadCircularProgresComponent extends StatefulWidget {
   const ReadCircularProgresComponent({
     super.key,
     required this.onRetry,
-    this.retryText = "Yeniden Dene",
+    this.retryText = "retry",
   });
 
   @override
@@ -63,7 +64,7 @@ class _ReadCircularProgresComponentState
       child: _showRetry
           ? ElevatedButton(
               onPressed: _handleRetry,
-              child: Text(widget.retryText),
+              child: Text(widget.retryText.tr),
             )
           : const CircularProgressIndicator(),
     );

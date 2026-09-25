@@ -294,10 +294,10 @@ class ReaderController extends BaseController {
 
     if (bookId != null && lastSavedLocationCfi != location.startCfi) {
       Get.defaultDialog(
-        title: "Çıkış",
-        middleText: "Kitapta kaldığınız yeri kaydetmek ister misiniz?",
-        textCancel: "Hayır",
-        textConfirm: "Evet",
+        title: "exit".tr,
+        middleText: "save_reading_position_message".tr,
+        textCancel: "no".tr,
+        textConfirm: "yes".tr,
         onConfirm: () async {
           Get.back<bool>(result: true);
           await saveBookmark();
@@ -324,10 +324,10 @@ class ReaderController extends BaseController {
   //kitap kayıtlı değilse kaydet redarden çıılıyorsa kadığı yerde kayıt ediyor
   Future<void> saveBookFromExternal(bool isBack) async {
     Get.defaultDialog(
-      title: "Kitapı Kayet",
-      middleText: "Kitap kitaplıkta kayıtlı değil eklenmesini istermisiniz?",
-      textCancel: "Hayır",
-      textConfirm: "Evet",
+      title: "save_book".tr,
+      middleText: "save_book_message".tr,
+      textCancel: "cancel".tr,
+      textConfirm: "save".tr,
       onConfirm: () async {
         Get.back<bool>(result: true);
         var uuid = DateTime.now().millisecondsSinceEpoch.toString();

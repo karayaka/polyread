@@ -28,7 +28,7 @@ class BaseController extends GetxController {
 
   void succesMessage(String message) {
     Get.snackbar(
-      "Başarılı",
+      "successful".tr,
       message,
       colorText: Colors.white,
       backgroundColor: Colors.green,
@@ -37,7 +37,7 @@ class BaseController extends GetxController {
 
   void errorMessage(String message, {Widget? widget}) {
     Get.snackbar(
-      "Hata",
+      "error".tr,
       message,
       colorText: Colors.white,
       backgroundColor: Colors.red,
@@ -47,7 +47,7 @@ class BaseController extends GetxController {
 
   void warningMessage(String message) {
     Get.snackbar(
-      "Uyarı",
+      "warning".tr,
       message,
       colorText: Colors.white,
       backgroundColor: Colors.orange.shade600,
@@ -77,7 +77,7 @@ class BaseController extends GetxController {
     final box = GetStorage();
     final savedLocale = box.read('app_locale');
     final initialLocale =
-        savedLocale ?? Get.deviceLocale?.toString().split("-")[0] ?? 'tr';
+        savedLocale ?? Get.deviceLocale?.toString().split("_")[0] ?? 'tr';
     return initialLocale;
   }
 }

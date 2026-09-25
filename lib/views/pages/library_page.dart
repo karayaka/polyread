@@ -15,57 +15,59 @@ class LibraryPage extends GetView<LibraryController> {
   @override
   Widget build(BuildContext context) {
     Get.lazyPut(() => LibraryController());
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "library".tr,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            "library".tr,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                _getSeacrhPanel();
+              },
+              icon: Icon(Icons.search_rounded),
+            ),
+            IconButton(
+              onPressed: () => _getFilterPanel(),
+              icon: Icon(Icons.filter_list),
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              _getSeacrhPanel();
-            },
-            icon: Icon(Icons.search_rounded),
-          ),
-          IconButton(
-            onPressed: () => _getFilterPanel(),
-            icon: Icon(Icons.filter_list),
-          ),
-        ],
+        body: Obx(() {
+          if (controller.booksLoading.value) {
+            return Center(child: CustomInfoProgress());
+          } else {
+            return RefreshIndicator(
+              onRefresh: () => controller.onRefresh(),
+              child: Column(
+                children: [
+                  Expanded(child: _bookGrid()),
+                  Obx(() {
+                    if (controller.nextPageLoading.value) {
+                      return SizedBox(child: LinearProgressIndicator());
+                    }
+                    return SizedBox();
+                  }),
+                ],
+              ),
+            );
+          }
+        }),
+        bottomNavigationBar: Obx(() {
+          if (controller.isBannerLoaded.value && controller.bannerAd != null) {
+            return SafeArea(
+              child: SizedBox(
+                width: controller.bannerAd!.size.width.toDouble(),
+                height: controller.bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: controller.bannerAd!),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        }),
       ),
-      body: Obx(() {
-        if (controller.booksLoading.value) {
-          return Center(child: CustomInfoProgress());
-        } else {
-          return RefreshIndicator(
-            onRefresh: () => controller.onRefresh(),
-            child: Column(
-              children: [
-                Expanded(child: _bookGrid()),
-                Obx(() {
-                  if (controller.nextPageLoading.value) {
-                    return SizedBox(child: LinearProgressIndicator());
-                  }
-                  return SizedBox();
-                }),
-              ],
-            ),
-          );
-        }
-      }),
-      bottomNavigationBar: Obx(() {
-        if (controller.isBannerLoaded.value && controller.bannerAd != null) {
-          return SafeArea(
-            child: SizedBox(
-              width: controller.bannerAd!.size.width.toDouble(),
-              height: controller.bannerAd!.size.height.toDouble(),
-              child: AdWidget(ad: controller.bannerAd!),
-            ),
-          );
-        }
-        return const SizedBox.shrink();
-      }),
     );
   }
 
@@ -159,7 +161,10 @@ class LibraryPage extends GetView<LibraryController> {
                 padding: const EdgeInsets.only(left: 5),
                 child: Text(
                   "categories".tr,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               HorizontalSelector(
@@ -177,7 +182,10 @@ class LibraryPage extends GetView<LibraryController> {
                 padding: const EdgeInsets.only(left: 5),
                 child: Text(
                   "languages".tr,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               HorizontalSelector(
